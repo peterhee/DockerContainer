@@ -1,10 +1,10 @@
 {
-  "name": "hello-world",
+  "name": "generate-random-guid",
   "version": "1.0.0",
-  "description": "Sample Hello World on Docker",
-  "main": "index.js",
+  "description": "Sample generate random Guid using NodeJS",
+  "main": "app.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "Peter Heese",
@@ -14,6 +14,7 @@
     "url" : "https://github.com/peterhee/DockerContainerHelloWorld.git" 
   },
   "dependencies": {
-    "express": "^4.16.1"
+    "express": "^4.16.1",
+    "uuid": "^2.0.2"
   }
 }

@@ -1,0 +1,18 @@
+from alpine
+
+RUN apk --update add nodejs
+
+# Create work directory
+WORKDIR /usr/src/app
+COPY package*.json ./
+
+RUN npm install
+
+COPY ./app.js ./app.js
+
+EXPOSE 40000 
+
+RUN apk --update add curl
+HEALTHCHECK CMD curl -4 --fail -s localhost:40000/uuid || exit 1
+
+CMD [ "npm", "start"]
