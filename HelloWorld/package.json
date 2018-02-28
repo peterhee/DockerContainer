@@ -9,6 +9,10 @@
   "keywords": [],
   "author": "Peter Heese",
   "license": "0BSD",
+  "repostiory" : {
+    "type" : "git",
+    "url" : "https://github.com/peterhee/DockerContainerHelloWorld.git" 
+  },
   "dependencies": {
     "express": "^4.16.1"
   }
