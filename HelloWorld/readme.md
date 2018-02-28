@@ -3,7 +3,7 @@
 ## Deploy it in s swarm
 Make sure you have minimum of two docker nodes running which have joind a swarm.
 
-1) Pull Image from Repository 
+1. Pull Image from Repository 
     >docker pull docker.io/pheese/guidgenerator
 
 2. Create service 

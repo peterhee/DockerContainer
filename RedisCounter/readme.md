@@ -3,9 +3,9 @@
 ## Deploy it in s swarm
 Make sure you have minimum of two docker nodes running which have joind a swarm.
 
-Make sure that you have a overlay network redisnet deployed and a redis in the network.
+Make sure that you have a overlay network redisnet deployed and a redis cache deployed in the network.
 
-1) Pull Image from Repository 
+1. Pull Image from Repository 
     >docker pull docker.io/pheese/rediscounter
 
 2. Create service 
