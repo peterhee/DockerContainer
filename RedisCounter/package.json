@@ -1,0 +1,21 @@
+{
+  "name": "counter-redis",
+  "version": "1.0.0",
+  "description": "Sample counter using Redis Cache",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "Peter Heese",
+  "license": "0BSD",
+  "repostiory" : {
+    "type" : "git",
+    "url" : "https://github.com/peterhee/DockerContainerHelloWorld.git" 
+  },
+  "dependencies": {
+    "express": "^4.16.1",
+    "redis": "^2.8.0",
+    "http": "^0.0.0"
+  }
+}
