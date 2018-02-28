@@ -1,5 +1,4 @@
-# Sample Container
-"Display Helllo World"
+# Sample Container "Display Helllo World"
 
 ## Deploy it in s swarm
 Make sure you have minimum of two docker nodes running which have joind a swarm.

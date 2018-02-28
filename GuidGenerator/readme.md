@@ -1,5 +1,4 @@
-# Sample Container
-"Generate Random UUID"
+# Sample Container "Generate Random UUID"
 
 ## Deploy it in s swarm
 Make sure you have minimum of two docker nodes running which have joind a swarm.
