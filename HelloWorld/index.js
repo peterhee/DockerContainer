@@ -5,16 +5,18 @@ const express = require('express');
 // Constants
 const PORT = 3001;
 const HOST = '0.0.0.0';
-const OS = require('os');
+const os = require('os');
 
 //App
 let app = express();
-let hostname = OS.hostname();
+let hostname = os.hostname();
 
 app.get("/", (req, res) =>
 {
-   res.send('Hello World - Hostname: ${hostname}\n');
+   var message = ["Hello World - Hostname", hostname, '\n'];
+   res.send(message.join(" "));
 });
 
 app.listen(PORT, HOST);
-console.log('Running in http://${HOST}:${PORT}');
+var logentry = ['Running in http://', HOST, ':', PORT,' Hostname: ', hostname];
+console.log(logentry.join(""));
