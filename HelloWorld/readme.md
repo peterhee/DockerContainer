@@ -18,7 +18,7 @@ Make sure you have minimum of two docker nodes running which have joind a swarm.
     > docker build -t docker.io/pheese/helloworld .
 
 2. Docker Tag
-    >docker tag guidgenerator docker.io/pheese/helloworld
+    >docker tag helloworld docker.io/pheese/helloworld
 
 3. Push Image into Repository
     >docker push docker.io/pheese/helloworld
