@@ -1,6 +1,6 @@
 # Sample Container "Generate Random UUID"
 
-## Deploy it in s swarm
+## Deploy it in a swarm
 Make sure you have minimum of two docker nodes running which have joind a swarm.
 
 1) Pull Image from Repository 
