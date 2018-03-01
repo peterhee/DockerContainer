@@ -10,7 +10,7 @@ Make sure you have minimum of two docker nodes running which have joind a swarm.
     >docker service create --name guid --publish 40000:40000 --replicas=3 docker.io/pheese/guidgenerator
 
 3. Test container
-    >curl -4 -i localost:40000/uuid
+    >curl -4 -i localhost:40000/uuid
 
 ## Create the container using source from the git repository
 

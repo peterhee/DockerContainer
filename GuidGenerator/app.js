@@ -1,16 +1,16 @@
-'use strict';
-
-const express = require('express');
-const uuid = require('uuid');
+// 'use strict';
+var express = require('express'),
+    uuid = require('uuid'),
+    os = require('os');
 
 // Constants
-const PORT = 40000;
-const HOST = '0.0.0.0';
-const os = require('os');
+var PORT = 40000;
+var HOST = '0.0.0.0';
+var os = require('os');
 
 //App
-let app = express();
-let hostname = os.hostname();
+var app = express();
+var hostname = os.hostname();
 
 app.get("/uuid", (req, res) =>
 {

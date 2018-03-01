@@ -1,15 +1,14 @@
-'use strict';
-
-const express = require('express');
+// 'use strict';
+var express = require('express'),
+    os = require('os');
 
 // Constants
-const PORT = 30000;
-const HOST = '0.0.0.0';
-const os = require('os');
+var PORT = 30000;
+var HOST = '0.0.0.0';
 
 //App
-let app = express();
-let hostname = os.hostname();
+var app = express();
+var hostname = os.hostname();
 
 app.get("/", (req, res) =>
 {
@@ -18,5 +17,5 @@ app.get("/", (req, res) =>
 });
 
 app.listen(PORT, HOST);
-var logentry = ['Running in http://', HOST, ':', PORT,' Hostname: ', hostname];
+var logentry = ['Running in http://', HOST, ':', PORT,' Container: ', hostname];
 console.log(logentry.join(""));

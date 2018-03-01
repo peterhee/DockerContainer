@@ -12,7 +12,7 @@ Make sure that you have a overlay network redisnet deployed and a redis cache de
     >docker service create --name=counter --replicas=3 --network=redisnet --publish=50000:50000 docker.io/pheese/rediscounter
 
 3. Test container
-    >curl -4 -i localost:50000/
+    >curl -4 -i localhost:50000/
 
 ## Create the container using source from the git repository
 

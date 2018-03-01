@@ -10,7 +10,7 @@ Make sure you have minimum of two docker nodes running which have joind a swarm.
     >docker service create --name helloworld --publish 30000:30000 --replicas=3 docker.io/pheese/helloworld
 
 3. Test container
-    >curl -4 -i localost:30000/
+    >curl -4 -i localhost:30000/
 
 ## Create the container using source from the git repository
 
