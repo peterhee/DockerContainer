@@ -1,2 +1,2 @@
-# DockerContainerHelloWorld
-Sample Docker Container Hello World
+# Docker Container HelloWorld
+Sample Docker Container
