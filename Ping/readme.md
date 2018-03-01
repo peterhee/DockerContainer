@@ -1,7 +1,7 @@
-#Sample Container "Ping test"
+# Sample Container "Ping test"
 
 Create service
-sudo docker service create --name ping --replicas=3 docker.io/pheese/ping ping docker.com
+>sudo docker service create --name ping --replicas=3 docker.io/pheese/ping ping docker.com
 
 Create Image
 >sudo docker build -t docker.io/pheese/ping .
