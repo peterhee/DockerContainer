@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration packages="com.microsoft.applicationinsights.log4j.v2">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+    </Console>
+    <ApplicationInsightsAppender name="aiAppender">
+    </ApplicationInsightsAppender>
+  </Appenders>
+  <Loggers>
+  
+    <Root level="info">
+      <AppenderRef ref="Console"  />
+      <AppenderRef ref="aiAppender"  />
+    </Root>
+  </Loggers>
+</Configuration>
