@@ -11,10 +11,10 @@
     >docker tag generate-docfx docker.io/pheese/generate-docfx
 
 3. Push Image into Repository
-    >docker docker.io/pheese/generate-docfx
+    > docker docker.io/pheese/generate-docfx
 
 ## Generate and run a DocFX website locally in a docker container
 
 1. Clone the git repository [DocFx sample web](https://github.com/docascode/docfx-seed).
 2. Run the build docker container.
-    > docker run -it -p 8080:80 -v <DocFX website folder>:/source docker.io/pheese/generate-docfx
+    > docker run -it -p 8080:80 -v [DocFX website folder]:/source docker.io/pheese/generate-docfx
