@@ -8,7 +8,7 @@
     > docker build -t docker.io/[YourName]/generate-docfx .
 
 2. Push Image into Repository
-    > docker push docker.io/peterhee/generate-docfx:latest
+    > docker push docker.io/[YourName]/generate-docfx:latest
 
 ## Generate and run a DocFX website locally in a docker container
 
