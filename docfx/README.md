@@ -14,4 +14,4 @@
 
 1. Fork & then clone the git repository [DocFx sample web](https://github.com/docascode/docfx-seed) on your computer.
 2. Run the docker container.
-    > docker run -it -rm --name generate-docfx -p 8080:80 -v [DocFX website folder]:/source docker.io/ [YourName]/generate-docfx
+    > docker run -it --rm --name generate-docfx -p 8080:80 -v [DocFX website folder]:/source docker.io/ [YourName]/generate-docfx
