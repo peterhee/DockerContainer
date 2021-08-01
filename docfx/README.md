@@ -5,16 +5,13 @@
 ## Create the container using source from the git repository
 
 1. Create Image using the dockerfile, app.js and package.josn
-    > docker build -t docker.io/pheese/generate-docfx .
+    > docker build -t docker.io/[YourName]/generate-docfx .
 
-2. Docker Tag
-    >docker tag generate-docfx docker.io/pheese/generate-docfx
-
-3. Push Image into Repository
-    > docker docker.io/pheese/generate-docfx
+2. Push Image into Repository
+    > docker push docker.io/peterhee/generate-docfx:latest
 
 ## Generate and run a DocFX website locally in a docker container
 
-1. Clone the git repository [DocFx sample web](https://github.com/docascode/docfx-seed).
-2. Run the build docker container.
-    > docker run -it -p 8080:80 -v [DocFX website folder]:/source docker.io/pheese/generate-docfx
+1. Fork & then clone the git repository [DocFx sample web](https://github.com/docascode/docfx-seed) on your computer.
+2. Run the docker container.
+    > docker run -it -rm --name generate-docfx -p 8080:80 -v [DocFX website folder]:/source docker.io/ [YourName]/generate-docfx

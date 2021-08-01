@@ -24,19 +24,18 @@ RUN apt-get update \
  && chmod +x /usr/bin/docfx \
  && rm -f /tmp/*
 
-# Configure the tools
+# Create source directory
 RUN mkdir -p /source
+
+# Configure the tools and scripts
 COPY entrypoint.sh /
 RUN chmod 755 /entrypoint.sh
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# ADD Sources /source/ 
-
+# Set working directory
 WORKDIR /source
-# RUN docfx docfx.json
 
-# WORKDIR /source/_site
-
+# Expose port 80
 EXPOSE 80
 
 ENTRYPOINT [ "/entrypoint.sh" ]

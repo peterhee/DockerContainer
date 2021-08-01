@@ -2,10 +2,16 @@
 
 set -e
 
-# DOCFX_CMD=/opt/docfx/docfx.exe
-
-# mono "$DOCFX_CMD" serve -p 8080 . 
+# Start nginx server
 nginx
 sleep 5
-docfx
-docfx serve /source/_site 
+
+# Compile DocFX Site
+docfx docfx.json
+
+# Host web site on port 80
+if [ -d /source/_site ]; then
+    docfx serve /source/_site 
+else
+    echo DocFX compilation error not _site directory creaated.
+fi    
