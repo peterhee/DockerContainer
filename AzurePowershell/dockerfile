@@ -5,7 +5,7 @@ ARG imageRepo=ubuntu
 FROM ${imageRepo}:${fromTag} AS installer-env
 
 ARG UBUNTU_VERSION=20.04
-ARG PS_VERSION=7.1.4
+ARG PS_VERSION=7.2.6
 
 # ARG PS_PACKAGE=powershell_7.1.3-1.ubuntu.20.04_amd64.deb
 # ARG PS_PACKAGE=powershell_${PS_VERSION}-1.ubuntu.${fromTag}_amd64.deb
