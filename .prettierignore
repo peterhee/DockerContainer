@@ -1,0 +1,14 @@
+###############
+#    folder   #
+###############
+public/
+resources/
+node_modules/
+tech-doc-hugo
+static/
+
+###############
+#   files     #
+###############
+.DS_Store
+Thumbs.db

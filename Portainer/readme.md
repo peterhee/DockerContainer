@@ -1,42 +1,53 @@
 # Fix access denied issue in Centos for docker.sock
 
 ## Install sealert to convert log into readable format
->yum install setroubleshoot-server
 
->Run as root - sealert /var/logs/audit/audit.log /var/logs/audit/audit-readable.log
+```bash
+yum install setroubleshoot-server
 
-## Fix access denied based on info from audit log (sample)
->ausearch -c 'portainer' --raw | audit2allow -M my-portainer
+# Run as root
+sudo sealert /var/logs/audit/audit.log /var/logs/audit/audit-readable.log
+```
 
->semodule -i my-portainer.pp
+```bash
+# Fix access denied based on info from audit log (sample)
 
-# Deploy Portainer using SSL
+sudo ausearch -c 'portainer' --raw | audit2allow -M my-portainer
+sudo semodule -i my-portainer.pp
+```
 
-## Create SSL certificate for Portainer Portal
->openssl genrsa -out ./portainer.key 2048
+## Deploy Portainer using SSL
 
->openssl ecparam -genkey -name secp384r1 -out ./portainer.key
+### Create SSL certificate for Portainer Portal
 
->openssl req -new -x509 -sha256 -key ./portainer.key -out ./portainer.crt -days 3650
+```bash
+openssl genrsa -out ./portainer.key 2048
+openssl ecparam -genkey -name secp384r1 -out ./portainer.key
+openssl req -new -x509 -sha256 -key ./portainer.key -out ./portainer.crt -days 3650
+```
 
-## Create Docker Volume to store persistent the certs and configuration data
+### Create Docker Volume to store persistent the certs and configuration data
+
 Create docker volumes
 
->docker volume create --name DataPortainer
-
->docker volume create --name CertsPortainer
+```bash
+docker volume create --name DataPortainer
+docker volume create --name CertsPortainer
+```
 
 Copy the certs into the volume, so Portainer can use them later on
->cp ./*.key /var/lib/docker/volumes/CertsPortainer/_data
 
->cp ./*.crt /var/lib/docker/volumes/CertsPortainer/_data
+```bash
+cp ./*.key /var/lib/docker/volumes/CertsPortainer/_data
+cp ./*.crt /var/lib/docker/volumes/CertsPortainer/_data
+```
 
-
-# Deploy Portainer on management node in docker swarm
+## Deploy Portainer on management node in docker swarm
 
 Create docker service for container
 
->docker service create \
+```bash
+docker service create \
     --name portainer \
     --publish 443:9000 \
     --constraint 'node.role == manager' \
@@ -45,3 +56,4 @@ Create docker service for container
     --mount source=CertsPortainer,target=/certs \
     portainer/portainer --ssl --sslcert /certs/portainer.crt --sslkey /certs/portainer.key\
     -H unix:///var/run/docker.sock
+```
