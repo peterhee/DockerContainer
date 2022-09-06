@@ -1,6 +1,6 @@
 # Sample Container "Redis Counter"
 
-## Deploy it in s swarm
+## Deploy it in a docker swarm
 
 Make sure you have minimum of two docker nodes running which have joined a
 swarm.
@@ -31,17 +31,17 @@ deployed in the network.
 1. Create Image using the dockerfile, app.js and package.josn
 
 ```bash
-     docker build -t docker.io/pheese/rediscounter .
+     docker build -t docker.io/{YourName}/rediscounter .
 ```
 
 2. Docker Tag
 
 ```bash
-    docker tag rediscounter docker.io/pheese/rediscounter
+    docker tag rediscounter docker.io/{YourName}/rediscounter
 ```
 
 3. Push Image into Repository
 
 ```bash
-    docker push docker.io/pheese/rediscounter
+    docker push docker.io/{YourName}/rediscounter
 ```

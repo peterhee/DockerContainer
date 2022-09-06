@@ -1,19 +1,20 @@
 # Sample Container "Generate Random UUID"
 
-## Deploy it in a swarm
+## Deploy it in a docker swarm
 
-Make sure you have minimum of two docker nodes running which have joind a swarm.
+Make sure you have minimum of two docker nodes running which have joined a
+swarm.
 
 1. Pull Image from Repository
 
 ```bash
-    docker pull docker.io/[YourName]/guidgenerator
+    docker pull docker.io/pheese/guidgenerator
 ```
 
 2. Create service
 
 ```bash
-    docker service create --name guid --publish 40000:40000 --replicas=3 docker.io/[YourName]/guidgenerator
+    docker service create --name guid --publish 40000:40000 --replicas=3 docker.io/pheese/guidgenerator
 ```
 
 3. Test container

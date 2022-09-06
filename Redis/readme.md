@@ -1,8 +1,9 @@
 # Sample Container "Redis Cache"
 
-## Deploy it in s swarm
+## Deploy it in a docker swarm
 
-Make sure that you have a overlay network redisnet deployed.
+Make sure you have minimum of two docker nodes running which have joined a
+swarm. Make sure that you have a overlay network redisnet deployed.
 
 1. Pull Image from Repository
 
@@ -27,17 +28,17 @@ Make sure that you have a overlay network redisnet deployed.
 1. Create Image using the dockerfile, app.js and package.josn
 
 ```bash
-    docker build -t docker.io/pheese/redis .
+    docker build -t docker.io/{YourName}/redis .
 ```
 
 2. Docker Tag
 
 ```bash
-    docker tag redis docker.io/pheese/redis
+    docker tag redis docker.io/{YourName}/redis
 ```
 
 3. Push Image into Repository
 
 ```bash
-    docker push docker.io/pheese/redis
+    docker push docker.io/{YourName}/redis
 ```

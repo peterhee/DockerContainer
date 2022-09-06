@@ -8,7 +8,7 @@ swarm.
 1. Pull Image from Repository
 
 ```bash
-    docker pull docker.io/pheese/guidgenerator
+    docker pull docker.io/pheese/helloworld
 ```
 
 2. Create service

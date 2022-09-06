@@ -1,6 +1,8 @@
-# Fix access denied issue in Centos for docker.sock
+# Portainer
 
-## Install sealert to convert log into readable format
+## Fix access denied issue in Centos for docker.sock
+
+### Install sealert to convert log into readable format
 
 ```bash
 yum install setroubleshoot-server
@@ -28,14 +30,14 @@ openssl req -new -x509 -sha256 -key ./portainer.key -out ./portainer.crt -days 3
 
 ### Create Docker Volume to store persistent the certs and configuration data
 
-Create docker volumes
+1. Create docker volumes
 
 ```bash
 docker volume create --name DataPortainer
 docker volume create --name CertsPortainer
 ```
 
-Copy the certs into the volume, so Portainer can use them later on
+2. Copy the certs into the volume, so Portainer can use them later on
 
 ```bash
 cp ./*.key /var/lib/docker/volumes/CertsPortainer/_data
@@ -44,7 +46,7 @@ cp ./*.crt /var/lib/docker/volumes/CertsPortainer/_data
 
 ## Deploy Portainer on management node in docker swarm
 
-Create docker service for container
+1. Create docker service for container
 
 ```bash
 docker service create \
