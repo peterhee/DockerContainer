@@ -1,0 +1,41 @@
+# Docker image file that describes an Ubuntu18.04 image with PowerShell installed from Microsoft APT Repo
+ARG fromTag=22.04
+ARG imageRepo=arm64v8/ubuntu
+
+FROM ${imageRepo}:${fromTag} AS installer-env
+
+ENV LC_ALL="en_US.UTF-8" \
+    LANG="en_US.UTF-8"
+
+RUN mkdir -p /root/scripts
+RUN mkdir -p /root/.azure
+
+COPY install.py /root/scripts/install.py
+COPY install.sh /root/scripts/install.sh
+COPY .bashrc /root/.bashrc
+COPY .bash_aliases /root/.bash_aliases
+
+# Install dependencies and clean up
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install --no-install-recommends -y \
+       python3 \
+       python3-distutils \
+       gcc \
+       python3-dev \
+       less \
+       locales \
+       curl \
+       ca-certificates \
+    && echo 'LC_ALL="en_US.UTF-8"' >>/etc/default/locale \
+    && echo 'LANG="en_US.UTF-8"'  >>/etc/default/locale \
+    && locale-gen $LANG && update-locale \
+    && chmod 755 /root/scripts/install.sh \
+    && /root/scripts/install.sh
+
+# Clean Up
+RUN rm /root/scripts/install.sh
+RUN rm /root/scripts/install.py
+
+# Use Bash command shell
+CMD [ "/bin/bash" ]
