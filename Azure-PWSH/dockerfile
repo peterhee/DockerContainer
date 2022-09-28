@@ -1,10 +1,10 @@
 # Docker image file that describes an Ubuntu18.04 image with PowerShell installed from Microsoft APT Repo
-ARG fromTag=20.04
+ARG fromTag=22.04
 ARG imageRepo=arm64v8/ubuntu
 
 FROM ${imageRepo}:${fromTag} AS installer-env
 
-ARG UBUNTU_VERSION=20.04
+ARG UBUNTU_VERSION=22.04
 ARG PS_VERSION=7.2.6
 
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.2.6/powershell-7.2.6-linux-arm64.tar.gz
