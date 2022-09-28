@@ -6,6 +6,7 @@ FROM ${imageRepo}:${fromTag} AS installer-env
 
 ARG UBUNTU_VERSION=22.04
 ARG PS_VERSION=7.2.6
+ARG TZDATA=Europe/Berlin
 
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.2.6/powershell-7.2.6-linux-arm64.tar.gz
 ARG PS_PACKAGE=powershell-${PS_VERSION}-linux-arm64.tar.gz
@@ -18,10 +19,12 @@ RUN echo "${PS_PACKAGE_URL}"
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     LC_ALL="en_US.UTF-8" \
     LANG="en_US.UTF-8" \
+    TZ=${TZDATA} \
     # set a fixed location for the Module analysis cache
     PSModuleAnalysisCachePath=/var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
     POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-Ubuntu-${UBUNTU_VERSION}
 
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN mkdir -p /opt/microsoft/powershell/7
 RUN mkdir -p /var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache
 RUN mkdir -p /root/scripts
