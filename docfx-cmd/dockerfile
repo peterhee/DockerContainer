@@ -1,6 +1,6 @@
 FROM mono:latest
 
-ENV DOCFX_VER 2.58
+ENV DOCFX_VER 2.59.4
 
 # RUN apt-get update \
 #  && apt-get install gnupg ca-certificates -y \
