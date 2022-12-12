@@ -5,7 +5,7 @@ ARG imageRepo=arm64v8/ubuntu
 FROM ${imageRepo}:${fromTag} AS installer-env
 
 ARG UBUNTU_VERSION=22.04
-ARG PS_VERSION=7.2.7
+ARG PS_VERSION=7.3.0
 ARG TZDATA=Europe/Berlin
 
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.2.6/powershell-7.2.6-linux-arm64.tar.gz
