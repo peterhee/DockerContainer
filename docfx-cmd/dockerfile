@@ -1,28 +1,18 @@
-FROM mono:latest
-
-ENV DOCFX_VER 2.59.4
-
-# RUN apt-get update \
-#  && apt-get install gnupg ca-certificates -y \
-#  && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
-# && echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | tee /etc/apt/sources.list.d/mono-official-stable.list
-#  && apt-get update \
-#  && apt install mono-devel -y
+FROM arm64v8/ubuntu:22.04
 
 # DOCFX Releases
 # https://github.com/dotnet/docfx/releases
-# https://github.com/dotnet/docfx/releases/download/v2.58/docfx.zip
 
 
 RUN apt-get update \
- && apt-get install unzip wget nginx git -y \
- && rm -rf /var/lib/apt/lists/* \
- && wget -q -P /tmp https://github.com/dotnet/docfx/releases/download/v${DOCFX_VER}/docfx.zip \
- && mkdir -p /opt/docfx \
- && unzip /tmp/docfx.zip -d /opt/docfx \
- && echo '#!/bin/bash\nmono /opt/docfx/docfx.exe $@' > /usr/bin/docfx \
- && chmod +x /usr/bin/docfx \
- && rm -f /tmp/*
+ && apt-get install unzip wget nginx git libunwind8 dotnet-sdk-7.0 -y
+
+# Add dotnet tools to path.
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# Install DocFX as a dotnet tool.
+RUN dotnet tool update -g docfx && \
+    docfx --version
 
 # Create source directory
 RUN mkdir -p /source

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+# set -e
 
 # Start nginx server
 nginx
