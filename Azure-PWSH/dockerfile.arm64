@@ -5,7 +5,7 @@ ARG imageRepo=arm64v8/ubuntu
 FROM ${imageRepo}:${fromTag} AS installer-env
 
 ARG UBUNTU_VERSION=22.04
-ARG PS_VERSION=7.3.5
+ARG PS_VERSION=7.3.6
 ARG TZDATA=Europe/Berlin
 
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.2.6/powershell-7.2.6-linux-arm64.tar.gz
@@ -31,6 +31,8 @@ RUN mkdir -p /root/scripts
 COPY install-az.ps1 /root/scripts/.
 COPY update-az.ps1 /root/scripts/.
 COPY login-az.ps1 /root/scripts/.
+COPY .bashrc /root/.bashrc
+COPY .bash_aliases /root/.bash_aliases
 
 # Install dependencies and clean up
 RUN apt-get update \
@@ -41,6 +43,7 @@ RUN apt-get update \
     ca-certificates \
     gss-ntlmssp \
     openssh-client \
+    jq \
     mono-devel \
     && echo 'LC_ALL="en_US.UTF-8"' >>/etc/default/locale \
     && echo 'LANG="en_US.UTF-8"'  >>/etc/default/locale \
@@ -74,8 +77,11 @@ RUN apt-get update \
            Write-Host "'Install-Module -Name AZ **** Takes a long time ****'" ; \
            Install-Module -Name Az -AllowClobber -Scope AllUsers -Force ;"
 
+# Set working directory
+WORKDIR /root
+
 # Use PowerShell as the default shell
 # Use array to avoid Docker prepending /bin/sh -c 
 CMD [ "pwsh" ]
-# Use Bash command shell
+# Use Bash command shell (Powershell is started through .bashrc)
 # CMD [ "/bin/bash" ]

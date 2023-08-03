@@ -26,6 +26,7 @@ RUN apt-get update \
        less \
        locales \
        curl \
+       jq \
        ca-certificates \
     && echo 'LC_ALL="en_US.UTF-8"' >>/etc/default/locale \
     && echo 'LANG="en_US.UTF-8"'  >>/etc/default/locale \
@@ -36,6 +37,9 @@ RUN apt-get update \
 # Clean Up
 RUN rm /root/scripts/install.sh
 RUN rm /root/scripts/install.py
+
+# Set working directory
+WORKDIR /root
 
 # Use Bash command shell
 CMD [ "/bin/bash" ]
