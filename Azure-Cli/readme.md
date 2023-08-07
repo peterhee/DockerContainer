@@ -105,8 +105,9 @@ sections to be updated to enable unattended installation.
 ## Docker on Windows
 
 If you have cloned the repository on your Windows Desktop. The files
-automatically converted into the DOS format. You need to convert the following
-files before you build the container image:
+automatically converted into the DOS format. You need to
+[convert](https://ubuntugenius.wordpress.com/2010/10/26/how-to-convert-windowsdos-text-files-to-linuxunix-format/#:~:text=It's%20actually%20very%20easy%20to,Unix%2FLinux%20instead%20of%20Windows.)
+the following files before you build the container image:
 
 - .bashrc
 - .bash_aliases
