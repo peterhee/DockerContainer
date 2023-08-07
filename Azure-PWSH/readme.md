@@ -50,3 +50,19 @@ For AMD64
 ```bash
    docker run -it --rm --name pwsh-az -v $HOME/DockerShare:/root docker.io/pheese/azure-pwsh
 ```
+
+## Docker on Windows
+
+If you have cloned the repository on your Windows Desktop. The files
+automatically converted into the DOS format. You need to convert the following
+files before you build the container image:
+
+- .bashrc
+- .bash_aliases
+
+**Convert to Linux format**
+
+```bash
+fromdos .bashrc
+fromdos .bash_aliases
+```

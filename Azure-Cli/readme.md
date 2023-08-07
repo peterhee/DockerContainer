@@ -101,3 +101,21 @@ sections to be updated to enable unattended installation.
       -v $HOME/DockerShare/scripts:/root/scripts \
       docker.io/pheese/azure-cli:AMD64
 ```
+
+## Docker on Windows
+
+If you have cloned the repository on your Windows Desktop. The files
+automatically converted into the DOS format. You need to convert the following
+files before you build the container image:
+
+- .bashrc
+- .bash_aliases
+- install.sh
+
+**Convert to Linux format**
+
+```bash
+fromdos .bashrc
+fromdos .bash_aliases
+fromdos install.sh
+```
