@@ -1,7 +1,7 @@
 #!/bin/bash
 
 user="pheese"
-name="azure-cli"
+name="azure-pwsh"
 cpu=""
 
 case "$cpu" in
