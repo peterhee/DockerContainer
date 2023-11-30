@@ -1,5 +1,6 @@
 # Docker image file that describes an Ubuntu18.04 image with PowerShell installed from Microsoft APT Repo
-ARG fromTag=22.04
+# ARG fromTag=22.04
+ARG fromTag=23.10
 ARG imageRepo=arm64v8/ubuntu
 
 FROM ${imageRepo}:${fromTag} AS installer-env
@@ -12,7 +13,7 @@ ARG CPU=arm64
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.2.6/powershell-7.2.6-linux-arm64.tar.gz
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.3.6/powershell-7.3.6-linux-x64.tar.gz
 
-ARG PS_PACKAGE=powershell-${PS_VERSION}-linux-${CPU}.tar.gz
+ARG PS_PACKAGE=powershell-${PS_VERSION}-linux-{CPU}.tar.gz
 ARG PS_PACKAGE_URL=https://github.com/PowerShell/PowerShell/releases/download/v${PS_VERSION}/${PS_PACKAGE}
 
 RUN echo "${PS_PACKAGE}"
