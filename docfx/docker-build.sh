@@ -3,8 +3,16 @@
 user="pheese"
 name="generate-docfx"
 
+case "$cpu" in
+     "amd64" ) cpu="amd64";;
+     *) cpu="arm64";;
+esac
+
+
+echo CPU Type $cpu
+
 # Build Docker Container
-if [ -f dockerfile ]; then
-    docker build -t docker.io/$user/$name .
-    docker tag docker.io/$user/$name docker.io/$user/$name:arm64
+if [ -f dockerfile.$cpu ]; then
+    docker build -t docker.io/$user/$name:$cpu -f dockerfile.$cpu .
+    # docker tag docker.io/$user/$name docker.io/$user/$name:$cpu
 fi
