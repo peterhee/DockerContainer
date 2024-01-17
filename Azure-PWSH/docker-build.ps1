@@ -13,6 +13,8 @@ for ($i = 0; $i -le $Args.count; $i++ ) {
 		}
 	}
 
+$user = "pheese"
+$name = "azure-pwsh"
 write.host $cpu
 
 if (Test-Path dockerfile.$cpu) {
