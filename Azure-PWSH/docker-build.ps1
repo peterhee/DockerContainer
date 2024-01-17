@@ -1,4 +1,7 @@
 # Command Line Arguments
+$user = "pheese"
+$name = "azure-pwsh"
+$cpu = "arm64"
 for ($i = 0; $i -le $Args.count; $i++ ) {
 	If ($Args[$i].Length -gt 0)
 		{
@@ -13,11 +16,9 @@ for ($i = 0; $i -le $Args.count; $i++ ) {
 		}
 	}
 
-$user = "pheese"
-$name = "azure-pwsh"
-write.host $cpu
 
+$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
+$dockerfile = @([string]::Format('dockerfile.{0}', $cpu))
 if (Test-Path dockerfile.$cpu) {
-    write-host docker build -t docker.io/$user/$name:$cpu -f dockerfile.$cpu .
+    docker build -t $container -f $dockerfile .
 }
-
