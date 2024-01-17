@@ -6,7 +6,7 @@ ARG imageRepo=arm64v8/ubuntu
 FROM ${imageRepo}:${fromTag} AS installer-env
 
 ARG UBUNTU_VERSION=22.04
-ARG PS_VERSION=7.3.9
+ARG PS_VERSION=7.4.1
 ARG TZDATA=Europe/Berlin
 ARG CPU=arm64
 
