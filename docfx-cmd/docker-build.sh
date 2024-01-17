@@ -2,6 +2,7 @@
 
 user="pheese"
 name="cmd-docfx"
+cpu=$1
 
 case "$cpu" in
      "amd64" ) cpu="amd64";;

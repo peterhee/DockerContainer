@@ -14,6 +14,6 @@ echo CPU Type $cpu
 
 # Build Docker Container
 if [ -f dockerfile.$cpu ]; then
-    docker build -t docker.io/$user/$name:$cpu -f dockerfile.$cpu .
+    docker push docker.io/$user/$name:$cpu
     # docker tag docker.io/$user/$name docker.io/$user/$name:$cpu
 fi

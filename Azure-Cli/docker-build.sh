@@ -2,7 +2,7 @@
 
 user="pheese"
 name="azure-cli"
-cpu=""
+cpu=$1
 
 case "$cpu" in
      "amd64" ) cpu="amd64";;
