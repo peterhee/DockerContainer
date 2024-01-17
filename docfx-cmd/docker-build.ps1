@@ -1,6 +1,6 @@
 # Command Line Arguments
 $user = "pheese"
-$name = "azure-pwsh"
+$name = "cmd-docfx"
 $cpu = "arm64"
 for ($i = 0; $i -le $Args.count; $i++ ) {
 	If ($Args[$i].Length -gt 0)
