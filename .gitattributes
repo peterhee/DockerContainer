@@ -1,0 +1,51 @@
+# https://github.com/gitattributes/gitattributes
+
+# THIS IS ONLY FOR THE gitattributes REPOSITORY.
+# Handle line endings automatically for files detected as text
+# and leave all files detected as binary untouched.
+*          text=auto
+
+#
+# The above will handle all files NOT found below
+#
+# These files are text and should be normalized (Convert crlf => lf)
+*.gitattributes text
+.gitignore      text
+*.md            text diff=markdown
+
+# Basic .gitattributes for a Microsoft Shell repo.
+
+# Source files
+# ============
+*.bat      text eol=crlf
+*.cmd      text eol=crlf
+*.msh      text eol=crlf
+*.msh1     text eol=crlf
+*.msh2     text eol=crlf
+*.mshxml   text eol=crlf
+*.msh1xml  text eol=crlf
+*.msh2xml  text eol=crlf
+*.mcf      text eol=crlf
+
+# Basic .gitattributes for a PowerShell repo.
+
+# Source files
+# ============
+*.ps1      text eol=crlf
+*.ps1x     text eol=crlf
+*.psm1     text eol=crlf
+*.psd1     text eol=crlf
+*.ps1xml   text eol=crlf
+*.pssc     text eol=crlf
+*.psrc     text eol=crlf
+*.cdxml    text eol=crlf
+
+# Linux Bash repo
+
+# Source files
+# ============
+*.bash    text eol=lf
+*.sh      text eol=lf
+*.profile text eol=lf
+.bashrc   text eol=lf
+.bash_aliases   text eol=lf
