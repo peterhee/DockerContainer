@@ -1,5 +1,20 @@
 #!/bin/bash
 
+check_os() {
+    if [ $(uname) == "Darwin" ]; then
+        echo "MacOS installed."
+    elif [ $(uname) == "Linux" ]; then
+        echo "Linux installed"
+        # Only if pass is installed
+        if which "$1" > /dev/null; then
+            pass show docker-credential-helpers/docker-pass-initialized-check           
+        fi
+    else
+        echo "Error: Unknown operating system."
+        exit 1
+    fi
+}
+
 user="pheese"
 name="azure-pwsh"
 cpu=$1
@@ -9,6 +24,7 @@ case "$cpu" in
      *) cpu="arm64";;
 esac
 
+check_os
 
 echo CPU Type $cpu
 
