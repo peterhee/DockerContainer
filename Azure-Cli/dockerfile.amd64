@@ -31,13 +31,12 @@ RUN apt-get update -y \
     && echo 'LC_ALL="en_US.UTF-8"' >>/etc/default/locale \
     && echo 'LANG="en_US.UTF-8"'  >>/etc/default/locale \
     && locale-gen $LANG && update-locale \
-    && chmod 755 /root/scripts/install.sh 
-#    \
-#    && /root/scripts/install.sh
+    && chmod 755 /root/scripts/install.sh \
+    && /root/scripts/install.sh
 
 # Clean Up
-# RUN rm /root/scripts/install.sh
-# RUN rm /root/scripts/install.py
+RUN rm /root/scripts/install.sh
+RUN rm /root/scripts/install.py
 
 # Set working directory
 WORKDIR /root
