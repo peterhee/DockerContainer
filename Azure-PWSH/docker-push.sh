@@ -6,7 +6,7 @@ check_os() {
     elif [ $(uname) == "Linux" ]; then
         echo "Linux installed"
         # Only if pass is installed
-        if which "$1" > /dev/null; then
+        if which "pass" > /dev/null; then
             pass show docker-credential-helpers/docker-pass-initialized-check           
         fi
     else
