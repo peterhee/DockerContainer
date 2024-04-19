@@ -8,9 +8,9 @@ ARG PS_VERSION=0.125.1
 ARG TZDATA=Europe/Berlin
 ARG CPU=arm64
 
-# https://github.com/gohugoio/hugo/releases/download/v0.125.1/hugo_0.125.1_linux-arm64.deb
+# https://github.com/gohugoio/hugo/releases/download/v0.125.1/hugo_extended_0.125.1_linux-arm64.deb
 
-ARG HUGO_PACKAGE=hugo_${PS_VERSION}_linux-${CPU}.deb
+ARG HUGO_PACKAGE=hugo_extended_${PS_VERSION}_linux-${CPU}.deb
 ARG HUGO_PACKAGE_URL=https://github.com/gohugoio/hugo/releases/download/v${PS_VERSION}/${HUGO_PACKAGE}
 
 # Define ENVs for Localization/Globalization
