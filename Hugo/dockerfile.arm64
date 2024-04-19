@@ -1,0 +1,49 @@
+ARG fromTag=22.04
+ARG imageRepo=arm64v8/ubuntu
+
+FROM ${imageRepo}:${fromTag} AS installer-env
+
+ARG UBUNTU_VERSION=22.04
+ARG PS_VERSION=0.125.1
+ARG TZDATA=Europe/Berlin
+ARG CPU=arm64
+
+# https://github.com/gohugoio/hugo/releases/download/v0.125.1/hugo_0.125.1_linux-arm64.deb
+
+ARG HUGO_PACKAGE=hugo_${PS_VERSION}_linux-${CPU}.deb
+ARG HUGO_PACKAGE_URL=https://github.com/gohugoio/hugo/releases/download/v${PS_VERSION}/${HUGO_PACKAGE}
+
+# Define ENVs for Localization/Globalization
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+    LC_ALL="en_US.UTF-8" \
+    LANG="en_US.UTF-8" \
+    TZ=${TZDATA}
+    # set a fixed location for the Module analysis cache
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN mkdir /SRC
+
+# Install dependencies and clean up
+RUN apt-get update -y \
+    && apt-get upgrade -y \
+    && apt-get install -y wget \
+    ca-certificates \
+    git \
+    golang-go
+
+RUN apt-get install --no-install-recommends -y \
+    locales \
+    && echo 'LC_ALL="en_US.UTF-8"' >>/etc/default/locale \
+    && echo 'LANG="en_US.UTF-8"'  >>/etc/default/locale \
+    && locale-gen $LANG && update-locale
+
+RUN wget -O /tmp/hugo.deb ${HUGO_PACKAGE_URL} >>/dev/null \
+    && dpkg -i /tmp/hugo.deb \
+    && locale-gen $LANG && update-locale \
+    rm /tmp/hugo.deb
+
+# Set working directory
+# Set working directory
+WORKDIR /SRC
+
+CMD [ "/bin/bash" ]
