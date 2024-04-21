@@ -1,0 +1,72 @@
+# Docker image file that describes an Ubuntu18.04 image with PowerShell installed from Microsoft APT Repo
+ARG fromTag=22.04
+ARG imageRepo=arm64v8/ubuntu
+FROM ${imageRepo}:${fromTag} AS installer-env
+
+# Default argument when not provided in the --build-arg
+ARG USER_ID=1000 
+ARG GROUP_ID=1000
+ARG USER_NAME=user
+
+ENV LC_ALL="en_US.UTF-8" \
+    LANG="en_US.UTF-8" \
+    TZ=${TZDATA}
+
+# Install dependencies and clean up
+RUN apt-get update -y \
+    && apt-get upgrade -y \
+    && apt-get install --no-install-recommends -y \
+       python3 \
+       python3-distutils \
+       gcc \
+       python3-dev \
+       less \
+       locales \
+       curl \
+       jq \
+       ca-certificates \
+    && echo ${LC_ALL} >>/etc/default/locale \
+    && echo ${LANG}  >>/etc/default/locale \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+    && locale-gen ${LANG} && update-locale
+
+# Create user and group
+RUN addgroup --gid ${GROUP_ID} ${USER_NAME}
+RUN adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}
+
+
+# Prepare install Azure-Cli in user context 
+RUN mkdir -p /home/${USER_NAME}/scripts
+RUN mkdir -p /home/${USER_NAME}/.azure
+RUN mkdir -p /home/${USER_NAME}/Json
+RUN mkdir -p /home/${USER_NAME}/Certificates
+
+COPY .bashrc /home/${USER_NAME}/.bashrc
+COPY .bash_aliases /home/${USER_NAME}/.bash_aliases
+COPY .bash_aliases /home/${USER_NAME}/.bash_history
+COPY install.py /home/${USER_NAME}/scripts/install.py
+COPY install.sh /home/${USER_NAME}/scripts/install.sh
+
+# Install Azure-Cli in user context 
+RUN chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME} \
+    && chmod 755 /home/${USER_NAME}/scripts/install.sh \
+    && chmod 775 /home/${USER_NAME}/scripts/install.py \
+    && /home/${USER_NAME}/scripts/install.sh ${USER_NAME}
+
+# Clean Up
+RUN rm /home/${USER_NAME}/scripts/install.sh
+RUN rm /home/${USER_NAME}/scripts/install.py
+
+RUN chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}
+RUN chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}/.azure
+RUN chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}/Json
+RUN chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}/Certificates
+
+USER ${USER_NAME}
+
+
+# Set working directory
+WORKDIR /home/${USER_NAME}
+    
+# Use Bash command shell
+CMD [ "/bin/bash" ]

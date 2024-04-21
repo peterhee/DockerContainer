@@ -28,9 +28,9 @@ RUN apt-get update -y \
        curl \
        jq \
        ca-certificates \
-    && echo 'LC_ALL="en_US.UTF-8"' >>/etc/default/locale \
-    && echo 'LANG="en_US.UTF-8"'  >>/etc/default/locale \
-    && locale-gen $LANG && update-locale \
+    && echo ${LC_ALL} >>/etc/default/locale \
+    && echo ${LANG}  >>/etc/default/locale \
+    && locale-gen ${LANG} && update-locale \
     && chmod 755 /root/scripts/install.sh \
     && /root/scripts/install.sh
 

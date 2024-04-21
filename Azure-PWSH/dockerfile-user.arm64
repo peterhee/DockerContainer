@@ -14,7 +14,6 @@ ARG USER_ID=1000
 ARG GROUP_ID=1000
 ARG USER_NAME=user
 
-
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.2.6/powershell-7.2.6-linux-arm64.tar.gz
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.3.6/powershell-7.3.6-linux-x64.tar.gz
 
@@ -33,15 +32,19 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     PSModuleAnalysisCachePath=/var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
     POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-Ubuntu-${UBUNTU_VERSION}
 
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN mkdir -p /opt/microsoft/powershell/7
-RUN mkdir -p /var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache
-RUN mkdir -p /root/scripts
-COPY install-az.ps1 /root/scripts/.
-COPY update-az.ps1 /root/scripts/.
-COPY login-az.ps1 /root/scripts/.
-COPY .bashrc /root/.bashrc
-COPY .bash_aliases /root/.bash_aliases
+# Create user and group
+RUN addgroup --gid ${GROUP_ID} ${USER_NAME} \
+    && adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME} \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+    && mkdir -p /opt/microsoft/powershell/7 \
+    && mkdir -p /var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
+    && mkdir -p /home/${USER_NAME}/scripts
+
+COPY install-az.ps1 /home/${USER_NAME}/scripts/.
+COPY update-az.ps1 /home/${USER_NAME}/scripts/.
+COPY login-az.ps1 /home/${USER_NAME}/scripts/.
+COPY .bashrc /home/${USER_NAME}/.bashrc
+COPY .bash_aliases /home/${USER_NAME}/.bash_aliases
 
 # Install dependencies and clean up
 RUN apt-get update -y \
@@ -55,19 +58,20 @@ RUN apt-get update -y \
     openssh-client \
     jq \
     mono-devel \
-    && echo 'LC_ALL="en_US.UTF-8"' >>/etc/default/locale \
-    && echo 'LANG="en_US.UTF-8"'  >>/etc/default/locale \
+    && echo ${LC_ALL} >>/etc/default/locale \
+    && echo ${LANG} $ >>/etc/default/locale \
     && locale-gen $LANG && update-locale \
     && wget -O /tmp/powershell.tar.gz ${PS_PACKAGE_URL} >>/dev/null \
     && tar -zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7  \
     && chmod +x /opt/microsoft/powershell/7/pwsh \
     && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh \
-    && locale-gen $LANG && update-locale \
     # remove powershell package 
-    && rm /tmp/powershell.tar.gz \
+    && rm /tmp/powershell.tar.gz
+
     # intialize powershell module cache
     # and disable telemetry
-    && export POWERSHELL_TELEMETRY_OPTOUT=1 \
+
+RUN export POWERSHELL_TELEMETRY_OPTOUT=1 \
     && pwsh \
         -NoLogo \
         -NoProfile \
@@ -86,9 +90,13 @@ RUN apt-get update -y \
           \$ProgressPreference = 'SilentlyContinue' ; \
            Write-Host "'Install-Module -Name AZ **** Takes a long time ****'" ; \
            Install-Module -Name Az -AllowClobber -Scope AllUsers -Force ;"
+           
+RUN chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}
+
+USER ${USER_NAME}
 
 # Set working directory
-WORKDIR /root
+WORKDIR /home/${USER_NAME}
 
 # Use PowerShell as the default shell
 # Use array to avoid Docker prepending /bin/sh -c 
