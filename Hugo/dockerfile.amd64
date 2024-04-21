@@ -22,6 +22,8 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     LC_ALL="en_US.UTF-8" \
     LANG="en_US.UTF-8" \
     USER=${USER_NAME} \
+    USER_ID=${USER_ID} \
+    GROUP_ID=${GROUP_ID} \
     TZ=${TZDATA}
     # set a fixed location for the Module analysis cache
 
@@ -55,8 +57,8 @@ RUN wget -O /tmp/hugo.deb ${HUGO_PACKAGE_URL} >>/dev/null \
 # Create user and group
 RUN addgroup --gid ${GROUP_ID} ${USER_NAME}
 RUN adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}
-RUN chown -R ${USER_NAME}:${USER_NAME} /site
-RUN chown -R ${USER_NAME}:${USER_NAME} /scripts
+RUN chown -R ${USER_ID}:${GROUP_ID} /site
+RUN chown -R ${USER_ID}:${GROUP_ID} /scripts
 
 USER ${USER}
 
