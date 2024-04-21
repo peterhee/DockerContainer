@@ -1,15 +1,17 @@
 # Docker image file that describes an Ubuntu18.04 image with PowerShell installed from Microsoft APT Repo
-ARG fromTag=22.04
-ARG imageRepo=arm64v8/ubuntu
-FROM ${imageRepo}:${fromTag} AS installer-env
+ARG FROMTAG=22.04
+ARG IMAGEREPO=arm64v8/ubuntu
 
-# Default argument when not provided in the --build-arg
+FROM ${IMAGEREPO}:${FROMTAG} AS installer-env
+
 ARG USER_ID=1000 
 ARG GROUP_ID=1000
 ARG USER_NAME=user
+ARG TZDATA=Europe/Berlin
 
 ENV LC_ALL="en_US.UTF-8" \
     LANG="en_US.UTF-8" \
+    USER=${USER_NAME} \
     TZ=${TZDATA}
 
 # Install dependencies and clean up

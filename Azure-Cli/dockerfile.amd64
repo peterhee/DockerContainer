@@ -4,8 +4,11 @@ ARG imageRepo=ubuntu
 
 FROM ${imageRepo}:${fromTag} AS installer-env
 
+ARG TZDATA=Europe/Berlin
+
 ENV LC_ALL="en_US.UTF-8" \
-    LANG="en_US.UTF-8"
+    LANG="en_US.UTF-8" \
+    TZ=${TZDATA}
 
 RUN mkdir -p /root/scripts
 RUN mkdir -p /root/.azure
@@ -31,6 +34,7 @@ RUN apt-get update -y \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
     && locale-gen ${LANG} && update-locale \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \    
     && chmod 755 /root/scripts/install.sh \
     && /root/scripts/install.sh
 

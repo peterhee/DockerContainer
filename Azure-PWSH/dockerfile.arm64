@@ -55,8 +55,8 @@ RUN apt-get update -y \
     openssh-client \
     jq \
     mono-devel \
-    && echo 'LC_ALL="en_US.UTF-8"' >>/etc/default/locale \
-    && echo 'LANG="en_US.UTF-8"'  >>/etc/default/locale \
+    && echo ${LC_ALL} >>/etc/default/locale \
+    && echo ${LANG} >>/etc/default/locale \
     && locale-gen $LANG && update-locale \
     && wget -O /tmp/powershell.tar.gz ${PS_PACKAGE_URL} >>/dev/null \
     && tar -zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7  \

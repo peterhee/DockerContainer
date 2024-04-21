@@ -27,6 +27,7 @@ RUN echo "${PS_PACKAGE_URL}"
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     LC_ALL="en_US.UTF-8" \
     LANG="en_US.UTF-8" \
+    USER=${USER_NAME} \      
     TZ=${TZDATA} \
     # set a fixed location for the Module analysis cache
     PSModuleAnalysisCachePath=/var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
@@ -38,7 +39,9 @@ RUN addgroup --gid ${GROUP_ID} ${USER_NAME} \
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && mkdir -p /opt/microsoft/powershell/7 \
     && mkdir -p /var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
-    && mkdir -p /home/${USER_NAME}/scripts
+    && mkdir -p /home/${USER_NAME}/scripts \
+    && mkdir -p /home/${USER_NAME}/Json \
+    && mkdir -p /home/${USER_NAME}/Certificates
 
 COPY install-az.ps1 /home/${USER_NAME}/scripts/.
 COPY update-az.ps1 /home/${USER_NAME}/scripts/.
@@ -91,8 +94,6 @@ RUN export POWERSHELL_TELEMETRY_OPTOUT=1 \
            Write-Host "'Install-Module -Name AZ **** Takes a long time ****'" ; \
            Install-Module -Name Az -AllowClobber -Scope AllUsers -Force ;"
            
-RUN chown -R ${USER_NAME}:${USER_NAME} /home/${USER_NAME}
-
 USER ${USER_NAME}
 
 # Set working directory
