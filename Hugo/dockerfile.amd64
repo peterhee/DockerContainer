@@ -64,3 +64,6 @@ EXPOSE 1313
 
 # Set working directory
 WORKDIR /site
+
+ENTRYPOINT [ "/scripts/entrypoint.sh" ]
+# CMD [ "/bin/bash" ]
