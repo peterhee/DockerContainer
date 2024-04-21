@@ -29,7 +29,7 @@ check_os
 echo CPU Type $cpu
 
 # Build Docker Container
-if [ -f dockerfile.$cpu ]; then
+if [ -f dockerfile.user.$cpu ]; then
     docker build -t docker.io/$user/$name:$cpu -f dockerfile.user.$cpu .
     # docker tag docker.io/$user/$name docker.io/$user/$name:$cpu
 fi
