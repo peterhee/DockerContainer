@@ -66,4 +66,4 @@ EXPOSE 1313
 WORKDIR /site
 
 ENTRYPOINT [ "/scripts/entrypoint.sh" ]
-# CMD [ "/bin/bash" ] 
+# CMD [ "/bin/bash" ]

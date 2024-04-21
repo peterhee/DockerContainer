@@ -17,10 +17,10 @@ check_os() {
 
 user="pheese"
 name="generate-docfx"
-cpu=$1
+cpu=$(uname -m)
 
 case "$cpu" in
-     "amd64" ) cpu="amd64";;
+     "x86_64" ) cpu="amd64";;
      *) cpu="arm64";;
 esac
 
