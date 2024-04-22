@@ -9,6 +9,8 @@ FROM ${imageRepo}:${fromTag} AS installer-env
 ARG UBUNTU_VERSION=22.04
 ARG PS_VERSION=7.4.2
 ARG TZDATA=Europe/Berlin
+# INTEL use x64 to get the Powershell installation files
+# ARM use arm64 to get the Powershell installation files
 ARG CPU=arm64
 ARG USER_ID=1000 
 ARG GROUP_ID=1000
