@@ -7,11 +7,11 @@ nginx
 sleep 5
 
 # Compile DocFX Site
-docfx docfx.json
+# docfx docfx.json
 
 # Host web site on port 80
-if [ -d /source/_site ]; then
-    docfx serve /source/_site 
+if [ -r /source/docfx.json ]; then
+    docfx build /source/docfx.json --serve 
 else
-    echo DocFX compilation error not _site directory creaated.
+    echo DocFX compilation error /source/docfx.json not found.
 fi    
