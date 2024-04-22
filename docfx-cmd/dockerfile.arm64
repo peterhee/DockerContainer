@@ -25,6 +25,8 @@ RUN apt-get update -y \
     && locale-gen ${LANG} && update-locale
 
 # Create source directory
+COPY .bashrc /root/.bashrc
+COPY .bash_aliases /root/.bash_aliases
 RUN mkdir -p /source
 RUN mkdir -p /scripts
 
