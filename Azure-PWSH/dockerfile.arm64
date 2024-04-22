@@ -7,7 +7,7 @@ FROM ${imageRepo}:${fromTag} AS installer-env
 
 # Default argument when not provided in the --build-arg
 ARG UBUNTU_VERSION=22.04
-ARG PS_VERSION=7.4.1
+ARG PS_VERSION=7.4.2
 ARG TZDATA=Europe/Berlin
 ARG CPU=arm64
 ARG USER_ID=1000 
