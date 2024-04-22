@@ -55,8 +55,8 @@ RUN wget -O /tmp/hugo.deb ${HUGO_PACKAGE_URL} >>/dev/null \
     rm /tmp/hugo.deb
 
 # Create user and group
-RUN if [ "${GROUP_ID}" != "20" ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
-RUN adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}
+RUN  if [ -z $(getent group ${GROUP_ID}) ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
+RUN  if [ -z $(getent passwd ${USER_ID}) ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
 RUN chown -R ${USER_ID}:${GROUP_ID} /site
 RUN chown -R ${USER_ID}:${GROUP_ID} /scripts
 

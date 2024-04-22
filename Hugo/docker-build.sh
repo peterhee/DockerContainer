@@ -15,6 +15,29 @@ check_os() {
     fi
 }
 
+USER_ID=$(id -u)
+GROUP_ID=$(id -g)
+
+# parse commandline
+for i in "$@"
+do
+    case $i in
+        -u=*|--uid=*)
+        USER_ID="${i#*=}"
+        ;;
+        -g=*|--gid=*)
+        GROUP_ID="${i#*=}"
+        ;;
+    *)
+        echo "*** Command line help ***"
+        echo Default: USER_ID=$USER_ID GROUP_ID=$GROUP_ID
+        echo -u="{USER_ID}" or --uid="{USER_ID}"
+        echo -g="{GROUP_ID}" or --gid="{GROUP_ID}"
+        exit 1
+    ;;
+    esac
+done
+
 user="pheese"
 name="hugo"
 cpu=$(uname -m)
@@ -27,9 +50,11 @@ esac
 check_os
 
 echo CPU Type $cpu
+echo USER_ID: $USER_ID
+echo GROUP_ID: $GROUP_ID
 
 # Build Docker Container
 if [ -f dockerfile.$cpu ]; then
-    docker build -t docker.io/$user/$name:$cpu -f dockerfile.$cpu .
+    docker build -t docker.io/$user/$name:$cpu --build-arg USER_ID=$USER_ID --build-arg GROUP_ID=$GROUP_ID -f dockerfile.$cpu .
     # docker tag docker.io/$user/$name docker.io/$user/$name:$cpu
 fi

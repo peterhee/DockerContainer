@@ -15,6 +15,37 @@ check_os() {
     fi
 }
 
+
+USER_ID=$(id -u)
+GROUP_ID=$(id -g)
+
+userenabled=0
+# parse commandline
+for i in "$@"
+do
+    echo Option $i
+    case $i in
+        -e|--enable)
+        userenabled=1
+        ;;
+        -u=*|--uid=*)
+        USER_ID="${i#*=}"
+        ;;
+        -g=*|--gid=*)
+        GROUP_ID="${i#*=}"
+        ;;
+        *)
+            echo "*** Command line help ***"
+            echo Default: USER_ID=$USER_ID GROUP_ID=$GROUP_ID
+            echo -e or --enable "To enable user in container"
+            echo -u="{USER_ID}" or --uid="{USER_ID}"
+            echo -g="{GROUP_ID}" or --gid="{GROUP_ID}"
+            exit 1
+        ;;
+    esac
+done
+
+
 user="pheese"
 name="azure-cli"
 cpu=$(uname -m)
@@ -27,9 +58,15 @@ esac
 check_os
 
 echo CPU Type $cpu
+echo USER enabled: $userenabled
 
 # Build Docker Container
-if [ -f dockerfile.user.$cpu ]; then
-    docker build -t docker.io/$user/$name:$cpu -f dockerfile.user.$cpu .
-    # docker tag docker.io/$user/$name docker.io/$user/$name:$cpu
+if [ $userenabled = 1 ]; then
+    if [ -f dockerfile.user.$cpu ]; then
+        docker build -t docker.io/$user/$name:$cpu --build-arg USER_ID=$USER_ID --build-arg GROUP_ID=$GROUP_ID -f dockerfile.user.$cpu .
+    fi
+else
+    if [ -f dockerfile.$cpu ]; then
+        docker build -t docker.io/$user/$name:$cpu -f dockerfile.$cpu .
+    fi
 fi

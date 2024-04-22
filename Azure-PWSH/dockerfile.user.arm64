@@ -34,9 +34,12 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-Ubuntu-${UBUNTU_VERSION}
 
 # Create user and group
-RUN addgroup --gid ${GROUP_ID} ${USER_NAME} \
-    && adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME} \
-    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+# Create user and group
+# RUN addgroup --gid ${GROUP_ID} ${USER_NAME}
+RUN  if [ -z $(getent group ${GROUP_ID}) ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
+RUN  if [ -z $(getent passwd ${USER_ID}) ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && mkdir -p /opt/microsoft/powershell/7 \
     && mkdir -p /var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
     && mkdir -p /home/${USER_NAME}/scripts \
