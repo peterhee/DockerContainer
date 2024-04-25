@@ -41,24 +41,35 @@ RUN apt-get update -y \
     git \
     python3 \
     python3-pip \
+    weasyprint \
     && apt-get install --no-install-recommends -y
 
 RUN echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
     && locale-gen $LANG && update-locale
 
-# Create user and group if not exist
+# Create user and group
 RUN if [ -z $(getent group ${GROUP_ID}) ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
 RUN if [ -z $(getent passwd ${USER_ID}) ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
 RUN chown -R ${USER_ID}:${GROUP_ID} /site
 RUN chown -R ${USER_ID}:${GROUP_ID} /scripts
-
 COPY .bashrc /home/${USER_NAME}/.bashrc
 COPY .bash_aliases /home/${USER_NAME}/.bash_aliases
 
 USER ${USER}
 
-RUN pip3 install mkdocs
+RUN pip3 install mkdocs \
+    && pip3 install markdown_extensions \
+    && pip3 install pymdown-extensions \
+    && pip3 install mkdocs-material \
+    && pip3 install mkdocs-pdf-export-plugin \
+    && pip3 install mkdocs-minify-plugin \
+    && pip3 install mkdocs-git-revision-date-plugin \
+    && pip3 install mkdocs-redirects \
+    && pip3 install mkdocs-autorefs \
+    && pip3 install mkdocs-literate-nav \
+    && pip3 install 'mkdocstrings[crystal,python]' \
+    && pip3 install mkdocs-click
  
 EXPOSE 8000
 

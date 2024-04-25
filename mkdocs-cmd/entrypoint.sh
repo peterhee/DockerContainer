@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# Hugo 
+# MKDOCS 
 chown ${USER_ID}:${GROUP_ID} /site
 
 # Build Site
-mkdocs build
+/home/$USER/.local/bin/mkdocs build
 
 # Run web server
-mkdocs serve --dev-addr 0.0.0.0:8000
+/home/$USER/.local/bin/mkdocs serve --dev-addr 0.0.0.0:8000
 
 
