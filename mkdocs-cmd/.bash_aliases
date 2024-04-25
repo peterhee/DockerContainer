@@ -13,4 +13,3 @@ alias update='apt update -y && apt upgrade -y'
 alias stat='stat -c "%a %n" $1'
 alias pgrep='pgrep -a $1'
 alias cp='cp -r -v $1 $2'
-Azure-Cli/.bash_aliases Azure-Cli/.bash_history Azure-Cli/.bashrc
