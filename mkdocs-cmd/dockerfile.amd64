@@ -24,7 +24,8 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     USER_ID=${USER_ID}
     # set a fixed location for the Module analysis cache
 
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime 
+RUN echo $TZ > /etc/timezone
 RUN mkdir /site
 RUN mkdir -p /scripts
 
