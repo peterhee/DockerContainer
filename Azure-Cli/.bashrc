@@ -90,15 +90,15 @@ alias l='ls -CF'
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+if [ -f "$HOME/.bash_aliases" ]; then
+    . "$HOME/.bash_aliases"
 fi
 
 # Function Defintion
 # You may want to define all functions in a separate file
 # ~/.zsh_functions. instead of adding them here directly
-if [ -f ~/.bash_functions ]; then
-    . ~/.bash_functions
+if [ -f "$HOME/.bash_functions" ]; then
+    . "$HOME/.bash_functions"
 fi
 
 # enable programmable completion features (you don't need to enable
