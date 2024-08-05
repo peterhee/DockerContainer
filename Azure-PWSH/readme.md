@@ -8,25 +8,52 @@ rebuild the image.
 
 1. Create Image using the dockerfile
 
-   > docker build -t docker.io/[YourName]/azure-pwsh .
+   1. Create Image using dockerfile (ARM64)
+
+   ```bash
+   # cpu=amd64
+   cpu=arm64
+   docker build -t docker.io/[YourName]/azure-pwsh \
+         -f dockerfile.user.$cpu .
+   ```
+
+   2. Create Image using dockerfile with specific user and group (ARM64)
+
+   ```bash
+   # cpu=amd64
+   cpu=arm64
+   docker build -t docker.io/[YourName]/azure-pwsh \
+         --build-arg USER_ID=1000 --build-arg GROUP_ID=1000 \
+         -f dockerfile.user.$cpu .
+   ```
+
+   3. Create Image using dockerfile with specific Powershell version (ARM64)
+
+   ```bash
+   # cpu=amd64
+   cpu=arm64
+   docker build -t docker.io/[YourName]/azure-pwsh \
+         --build-arg PS_VERSION="7.4.4"  \
+         -f dockerfile.user.$cpu .
+   ```
 
 2. Docker Tag:
 
    For ARM64
 
-```bash
-   docker tag docker.io/[YourName]/azure-pwsh docker.io/[YourName]/azure-pwsh:arm64
-```
+   ```bash
+      docker tag docker.io/[YourName]/azure-pwsh docker.io/[YourName]/azure-pwsh:arm64
+   ```
 
-For AMD64
+   For AMD64
 
-```bash
-   docker tag docker.io/[YourName]/azure-pwsh docker.io/[YourName]/azure-pwsh:amd64
-```
+   ```bash
+      docker tag docker.io/[YourName]/azure-pwsh docker.io/[YourName]/azure-pwsh:amd64
+   ```
 
 3. Push Image into Repository
 
-   For ARM64
+For ARM64
 
 ```bash
    docker push docker.io/[YourName]/azure-pwsh:arm64
