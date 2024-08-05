@@ -43,7 +43,20 @@ sections to be updated to enable unattended installation.
 1. Create Image using the dockerfile
 
 ```bash
-   docker build -t docker.io/[YourName]/azure-cli .
+   #ARM64
+   docker build -t docker.io/[YourName]/azure-cli -f dockerfile.arm64 .
+
+   # AMD64/x64
+   docker build -t docker.io/[YourName]/azure-cli -f dockerfile.amd64 .
+```
+
+```bash
+   # Build container using a non-root user
+   #ARM64
+   docker build -t docker.io/[YourName]/azure-cli --build-arg USER_ID=1000 --build-arg GROUP_ID=1000 -f dockerfile.user.arm64 .
+
+   # AMD64/x64
+   docker build -t docker.io/[YourName]/azure-cli --build-arg USER_ID=1000 --build-arg GROUP_ID=1000 -f dockerfile.user.amd64 .
 ```
 
 2. Docker Tag:
@@ -51,10 +64,8 @@ sections to be updated to enable unattended installation.
 ```bash
    # ARM64
    docker tag docker.io/[YourName]/azure-cli docker.io/[YourName]/azure-cli:arm64
-```
 
-```bash
-   # AMD64
+   # AMD64i/x64
    docker tag docker.io/[YourName]/azure-cli docker.io/[YourName]/azure-cli:amd64
 ```
 
@@ -63,10 +74,8 @@ sections to be updated to enable unattended installation.
 ```bash
    # ARM64
    docker push docker.io/[YourName]/azure-cli:arm64
-```
 
-```bash
-   # AMD64
+   # AMD64/x64
    docker push docker.io/[YourName]/azure-cli:amd64
 ```
 
@@ -75,31 +84,42 @@ sections to be updated to enable unattended installation.
 ```bash
    # ARM64
    docker run -it --rm --name azure-cli docker.io/[YourName]/azure-cli:arm64
-```
 
-```bash
-   # AMD64
+   # AMD64/x64
    docker run -it --rm --name azure-cli docker.io/[YourName]/azure-cli:amd64
 ```
 
-5. Run the container and save your state or share scripts. Ensure that the
-   directory _$HOME/DockerShare/.azure_ and _$HOME/DockerShare/scripts_ exists
-   on your computer.
+```bash
+   # ARM64
+   docker run -it --rm --name azure-cli docker.io/[YourName]/azure-cli:arm64
+
+   # AMD64/x64
+   docker run -it --rm --name azure-cli docker.io/[YourName]/azure-cli:amd64
+```
+
+5. Run the container and save your state on your computer.
 
 ```bash
    # ARM64
    docker run -it --rm --name azure-cli \
-      -v $HOME/DockerShare/.azure:/root/.azure \
-      -v $HOME/DockerShare/scripts:/root/scripts \
-      docker.io/pheese/azure-cli:arm64
-```
+      -v $HOME/DockerShare/.azure:/root/.azure \     # Path to Azure Cli state
+      docker.io/[YourName]/azure-cli:arm64
 
-```bash
-   # AMD64
+   # AMD64/x64
    docker run -it --rm --name azure-cli \
-      -v $HOME/DockerShare/.azure:/root/.azure \
-      -v $HOME/DockerShare/scripts:/root/scripts \
-      docker.io/pheese/azure-cli:AMD64
+      -v $HOME/DockerShare/.azure:/root/.azure \     # Path to Azure Cli state
+      docker.io/[YourName]/azure-cli:amd64
+
+   # Container using a non-root user
+   # ARM64
+   docker run -it --rm --name azure-cli \
+      -v $HOME/DockerShare/.azure:/home/user/.azure \     # Path to Azure Cli state
+      docker.io/[YourName]/azure-cli:arm64
+
+   # AMD64/x64
+   docker run -it --rm --name azure-cli \
+      -v $HOME/DockerShare/.azure:/home/user/.azure \     # Path to Azure Cli state
+      docker.io/[YourName]/azure-cli:amd64
 ```
 
 ## Docker on Windows

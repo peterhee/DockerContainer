@@ -8,84 +8,108 @@ https://github.com/PowerShell/PowerShell/releases/tag/v7.4.4
    1. Create Image using dockerfile (ARM64)
 
    ```bash
-   # cpu=amd64
-   cpu=arm64
-   docker build -t docker.io/[YourName]/azure-pwsh \
-         -f dockerfile.$cpu .
+      # ARM64
+      docker build -t docker.io/[YourName]/azure-pwsh \
+            -f dockerfile.arm64 .
+
+      # AMD64/x64
+      docker build -t docker.io/[YourName]/azure-pwsh \
+            -f dockerfile.amd64 .
    ```
 
    3. Create Image using dockerfile and specify Powershell version (ARM64)
 
    ```bash
-   # cpu=amd64
-   cpu=arm64
-   docker build -t docker.io/[YourName]/azure-pwsh \
-         --build-arg PS_VERSION="7.4.4"  \
-         -f dockerfile.$cpu .
+      # ARM64
+      docker build -t docker.io/[YourName]/azure-pwsh \
+            --build-arg PS_VERSION="7.4.4"  \
+            -f dockerfile.arm64 .
+
+      # AMD64/x64
+      docker build -t docker.io/[YourName]/azure-pwsh \
+            --build-arg PS_VERSION="7.4.4"  \
+            -f dockerfile.amd64 .
    ```
 
    3. Create Image using dockerfile with specific user and group (ARM64)
 
    ```bash
-   # Container using a non-root user
-   # cpu=amd64
-   cpu=arm64
-   docker build -t docker.io/[YourName]/azure-pwsh \
-         --build-arg USER_ID=1000 --build-arg GROUP_ID=1000 \
-         -f dockerfile.user.$cpu .
+      # Container using a non-root user
+      # ARM64
+      docker build -t docker.io/[YourName]/azure-pwsh \
+            --build-arg USER_ID=1000 --build-arg GROUP_ID=1000 \
+            -f dockerfile.user.arm64 .
+
+      # AMD64/x64
+      docker build -t docker.io/[YourName]/azure-pwsh \
+            --build-arg USER_ID=1000 --build-arg GROUP_ID=1000 \
+            -f dockerfile.user.amd64 .
    ```
 
 2. Docker Tag:
 
-   For ARM64
-
    ```bash
+      # ARM64
       docker tag docker.io/[YourName]/azure-pwsh docker.io/[YourName]/azure-pwsh:arm64
-   ```
 
-   For AMD64
-
-   ```bash
+      # AMD64/x64
       docker tag docker.io/[YourName]/azure-pwsh docker.io/[YourName]/azure-pwsh:amd64
    ```
 
 3. Push Image into Repository
 
-   For ARM64
-
    ```bash
+      # ARM64
       docker push docker.io/[YourName]/azure-pwsh:arm64
-   ```
 
-   For AMD64
-
-   ```bash
+      # AMD64/x64
       docker push docker.io/[YourName]/azure-pwsh:amd64
    ```
 
 4. Run the container
 
    ```bash
-      docker run -it --rm --name azure-pwsh docker.io/[YourName]/azure-pwsh
-   ```
-
-5. Run the container and save your state.
-
-   ```bash
+      # ARM64
       docker run -it --rm --name azure-pwsh \
-            -v \<your path\>:/root/.Azure \              # Path to Azure PS extension state
-            -v \<your path\>:/root/.dotnet \             # Path to x509 Certificate store
-            -v \<your path\>:/root/.config/powershell \  # Path to Powershell profile
-            docker.io/pheese/azure-pwsh
+            docker.io/[YourName]/azure-pwsh:arm64
+
+      # AMD64/x64
+      docker run -it --rm --name azure-pwsh \
+            docker.io/[YourName]/azure-pwsh:amd64
+
    ```
 
+5. Run the container and save your state on your computer.
+
    ```bash
+      # ARM64
+      docker run -it --rm --name azure-pwsh \
+            -v [YourPath]:/root/.Azure \              # Path to Azure PS extension state
+            -v [YourPath]:/root/.dotnet \             # Path to x509 Certificate store
+            -v [YourPath]:/root/.config/powershell \  # Path to Powershell profile
+            docker.io/[YourName]/azure-pwsh:arm64
+
+      # AMD64/x64
+      docker run -it --rm --name azure-pwsh \
+            -v [YourPath]:/root/.Azure \              # Path to Azure PS extension state
+            -v [YourPath]:/root/.dotnet \             # Path to x509 Certificate store
+            -v [YourPath]:/root/.config/powershell \  # Path to Powershell profile
+            docker.io/[YourName]/azure-pwsh:amd64
+
       # Container using a non-root user
+      # ARM64
       docker run -it --rm --name azure-pwsh \
-            -v \<your path\>:/home/user/.Azure \              # Path to Azure PS extension state
-            -v \<your path\>:/home/user/.dotnet \             # Path to x509 Certificate store
-            -v \<your path\>:/home/user/.config/powershell \  # Path to Powershell profile
-            docker.io/pheese/azure-pwsh
+            -v [YourPath]:/home/user/.Azure \              # Path to Azure PS extension state
+            -v [YourPath]:/home/user/.dotnet \             # Path to x509 Certificate store
+            -v [YourPath]:/home/user/.config/powershell \  # Path to Powershell profile
+            docker.io/[YourName]/azure-pwsh:arm64
+
+      # AMD64/x64
+      docker run -it --rm --name azure-pwsh \
+            -v [YourPath]:/home/user/.Azure \              # Path to Azure PS extension state
+            -v [YourPath]:/home/user/.dotnet \             # Path to x509 Certificate store
+            -v [YourPath]:/home/user/.config/powershell \  # Path to Powershell profile
+            docker.io/[YourName]/azure-pwsh:amd64
    ```
 
 ## Docker on Windows
