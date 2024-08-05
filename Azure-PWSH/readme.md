@@ -1,10 +1,7 @@
 ## Create the container using source from the git repository
 
-Check the current powershell version for Ubuntu Linux (Currently 7.0.3)
-https://github.com/PowerShell/PowerShell/releases/tag/v7.0.3
-
-Update the variable PS_VERSION=7.0.3 with current version of Powershell and
-rebuild the image.
+Check the current powershell version for Ubuntu Linux (Currently 7.4.4)
+https://github.com/PowerShell/PowerShell/releases/tag/v7.4.4
 
 1. Create Image using the dockerfile
 
@@ -14,26 +11,26 @@ rebuild the image.
    # cpu=amd64
    cpu=arm64
    docker build -t docker.io/[YourName]/azure-pwsh \
-         -f dockerfile.user.$cpu .
+         -f dockerfile.$cpu .
    ```
 
-   2. Create Image using dockerfile with specific user and group (ARM64)
-
-   ```bash
-   # cpu=amd64
-   cpu=arm64
-   docker build -t docker.io/[YourName]/azure-pwsh \
-         --build-arg USER_ID=1000 --build-arg GROUP_ID=1000 \
-         -f dockerfile.user.$cpu .
-   ```
-
-   3. Create Image using dockerfile with specific Powershell version (ARM64)
+   3. Create Image using dockerfile and specify Powershell version (ARM64)
 
    ```bash
    # cpu=amd64
    cpu=arm64
    docker build -t docker.io/[YourName]/azure-pwsh \
          --build-arg PS_VERSION="7.4.4"  \
+         -f dockerfile.$cpu .
+   ```
+
+   3. Create Image using dockerfile with specific user and group (ARM64)
+
+   ```bash
+   # cpu=amd64
+   cpu=arm64
+   docker build -t docker.io/[YourName]/azure-pwsh \
+         --build-arg USER_ID=1000 --build-arg GROUP_ID=1000 \
          -f dockerfile.user.$cpu .
    ```
 
@@ -53,30 +50,30 @@ rebuild the image.
 
 3. Push Image into Repository
 
-For ARM64
+   For ARM64
 
-```bash
-   docker push docker.io/[YourName]/azure-pwsh:arm64
-```
+   ```bash
+      docker push docker.io/[YourName]/azure-pwsh:arm64
+   ```
 
-For AMD64
+   For AMD64
 
-```bash
-   docker push docker.io/[YourName]/azure-pwsh:amd64
-```
+   ```bash
+      docker push docker.io/[YourName]/azure-pwsh:amd64
+   ```
 
 4. Run the container
 
-```bash
-   docker run -it --rm --name-az pwsh docker.io/[YourName]/azure-pwsh
-```
+   ```bash
+      docker run -it --rm --name az-pwsh docker.io/[YourName]/azure-pwsh
+   ```
 
 5. Run the container and save your state or share powershell scripts. Ensure
    that the directory _$HOME/DockerShare_ exists on your computer.
 
-```bash
-   docker run -it --rm --name pwsh-az -v $HOME/DockerShare:/root docker.io/pheese/azure-pwsh
-```
+   ```bash
+      docker run -it --rm --name az-pwsh -v $HOME/DockerShare:/root docker.io/pheese/azure-pwsh
+   ```
 
 ## Docker on Windows
 
