@@ -27,6 +27,7 @@ https://github.com/PowerShell/PowerShell/releases/tag/v7.4.4
    3. Create Image using dockerfile with specific user and group (ARM64)
 
    ```bash
+   # Container user using a non-root user
    # cpu=amd64
    cpu=arm64
    docker build -t docker.io/[YourName]/azure-pwsh \
@@ -68,11 +69,23 @@ https://github.com/PowerShell/PowerShell/releases/tag/v7.4.4
       docker run -it --rm --name azure-pwsh docker.io/[YourName]/azure-pwsh
    ```
 
-5. Run the container and save your state or share powershell scripts. Ensure
-   that the directory _$HOME/DockerShare_ exists on your computer.
+5. Run the container and save your state.
 
    ```bash
-      docker run -it --rm --name azure-pwsh -v $HOME/DockerShare:/root docker.io/pheese/azure-pwsh
+      docker run -it --rm --name azure-pwsh \
+            -v \<your path\>:/root/.Azure \              # Path to Azure PS extension configuration
+            -v \<your path\>:/root/.dotnet \             # Path to x509 Certificate store
+            -v \<your path\>:/root/.config/powershell \  # Path to Powershell profile
+            docker.io/pheese/azure-pwsh
+   ```
+
+   ```bash
+      # container using a non-root user
+      docker run -it --rm --name azure-pwsh \
+            -v \<your path\>:/home/user/.Azure \              # Path to Azure PS extension configuration
+            -v \<your path\>:/home/user/.dotnet \             # Path to x509 Certificate store
+            -v \<your path\>:/home/user/.config/powershell \  # Path to Powershell profile
+            docker.io/pheese/azure-pwsh
    ```
 
 ## Docker on Windows
