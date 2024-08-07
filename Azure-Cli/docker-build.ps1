@@ -42,9 +42,9 @@ for ($i = 0; $i -le $Args.count; $i++ ) {
 				write-host '	-u="{USER_ID}" or --uid="{USER_ID}"'
 				write-host '	-g="{GROUP_ID}" or --gid="{GROUP_ID}"'
 				write-host 'Default: non-root user USER_ID="1000" GROUP_ID="1000"'
-				write-host '	docker-build.ps1 -u="1000" -g="1000" -e'
+				write-host '	'$($MyInvocation.MyCommand.Name) '-u="1000" -g="1000" -e'
 				write-host 'Default: root user'
-				write-host '	docker-build.ps'		
+				write-host '	'$($MyInvocation.MyCommand.Name)
 
 				exit 1
                 } 

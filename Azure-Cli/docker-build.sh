@@ -35,12 +35,17 @@ do
         GROUP_ID="${i#*=}"
         ;;
         *)
-            echo "*** Command line help ***"
-            echo Default: USER_ID=$USER_ID GROUP_ID=$GROUP_ID
-            echo -e or --enable "To enable user in container"
-            echo -u="{USER_ID}" or --uid="{USER_ID}"
-            echo -g="{GROUP_ID}" or --gid="{GROUP_ID}"
-            exit 1
+        echo "*** Command line help ***"
+        echo ' -e or --enable "To run a Docker container as a non-root user"'
+        echo ' -u="{USER_ID}" or --uid="{USER_ID}"'
+        echo ' -g="{GROUP_ID}" or --gid="{GROUP_ID}"'
+        echo ' -p="{PS_VERSION}" or --pwsh={PS_VERSION}'
+        echo ' '
+        echo 'Default: root user'
+        echo ' '${0##*/}
+        echo 'Example default: non-root user USER_ID="$USER_ID" GROUP_ID="$GROUP_ID"'
+        echo ' '${0##*/} '-u="1001" -g="1001" -e'
+        exit 1
         ;;
     esac
 done
