@@ -38,11 +38,14 @@ for ($i = 0; $i -le $Args.count; $i++ ) {
 			default {
 				write-host $_
 				write-host "*** Command line help ***"
-				write-host "Default: USER_ID=1000 GROUP_ID=1000"
-				write-host '-e or --enable "To enable user in container"'
-				write-host '-u="{USER_ID}" or --uid="{USER_ID}"'
-				write-host '-g="{GROUP_ID}" or --gid="{GROUP_ID}"'
-				write-host 'docker-build.ps1 -u="1000" -g="1000" -e'
+				write-host '	-e or --enable "To run a Docker container as a non-root user"'
+				write-host '	-u="{USER_ID}" or --uid="{USER_ID}"'
+				write-host '	-g="{GROUP_ID}" or --gid="{GROUP_ID}"'
+				write-host 'Default: non-root user USER_ID="1000" GROUP_ID="1000"'
+				write-host '	docker-build.ps1 -u="1000" -g="1000" -e'
+				write-host 'Default: root user'
+				write-host '	docker-build.ps'		
+
 				exit 1
                 } 
 			}
