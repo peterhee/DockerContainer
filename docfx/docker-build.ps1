@@ -2,20 +2,15 @@
 $user = "pheese"
 $name = "generate-docfx"
 $cpu = "arm64"
-for ($i = 0; $i -le $Args.count; $i++ ) {
-	If ($Args[$i].Length -gt 0)
-		{
-		Switch ($Args[$i].ToLower())
-			{
-			"amd64" {
-					$cpu = [String]$Args[$i]}
-			default {
-                $cpu = "arm64"
-                } 
-			}
-		}
-	}
 
+if ($osarchitecture.StartsWith("ARM"))
+{
+	$cpu = "arm64"
+}
+else
+{
+	$cpu ="amd64"
+}
 
 $container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
 $dockerfile = @([string]::Format('dockerfile.{0}', $cpu))

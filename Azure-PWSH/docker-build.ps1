@@ -2,23 +2,62 @@
 $user = "pheese"
 $name = "azure-pwsh"
 $cpu = "arm64"
+$USER_ID = "1000"
+$GROUP_ID = "1000"
+
+$osarchitecture = $(Get-ComputerInfo).OsArchitecture
+write-host $osarchitecture
+
+if ($osarchitecture.StartsWith("ARM"))
+{
+	$cpu = "arm64"
+}
+else
+{
+	$cpu ="amd64"
+}
+
+
 for ($i = 0; $i -le $Args.count; $i++ ) {
 	If ($Args[$i].Length -gt 0)
 		{
 		Switch ($Args[$i].ToLower())
 			{
-			"amd64" {
-					$cpu = [String]$Args[$i]}
+			{@("-e", "--enable" -contains $_)}
+				{
+					$userenabled = $true
+				}
+			{@("-u", "--uid" -contains $_.Split("=")[0])}
+				{
+					$USER_ID = $Args[$i].Split("=")[1]
+				}
+			{@("-g", "--gid" -contains $_.Split("=")[0])}
+				{
+					$GROUP_ID = $Args[$i].Split("=")[1]
+				}
 			default {
-                $cpu = "arm64"
+				write-host $_
+				write-host "*** Command line help ***"
+				write-host "Default: USER_ID=1000 GROUP_ID=1000"
+				write-host '-e or --enable "To enable user in container"'
+				write-host '-u="{USER_ID}" or --uid="{USER_ID}"'
+				write-host '-g="{GROUP_ID}" or --gid="{GROUP_ID}"'
+				exit 1
                 } 
 			}
 		}
 	}
 
-
 $container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
-$dockerfile = @([string]::Format('dockerfile.{0}', $cpu))
+
+if ($userenabled) {
+	$dockerfile = @([string]::Format('dockerfile.user.{0}', $cpu))
+} else {
+	$dockerfile = @([string]::Format('dockerfile.{0}', $cpu))
+}
+
 if (Test-Path $dockerfile) {
+
+	write-host "docker build -t $container -f $dockerfile ."
     docker build -t $container -f $dockerfile .
 }
