@@ -42,6 +42,7 @@ for ($i = 0; $i -le $Args.count; $i++ ) {
 				write-host '-e or --enable "To enable user in container"'
 				write-host '-u="{USER_ID}" or --uid="{USER_ID}"'
 				write-host '-g="{GROUP_ID}" or --gid="{GROUP_ID}"'
+				write-host 'docker-build.ps1 -u="1000" -g="1000" -e'
 				exit 1
                 } 
 			}
