@@ -49,7 +49,9 @@ for ($i = 0; $i -le $Args.count; $i++ ) {
 	}
 
 if ($userenabled) {
-	$container = @([string]::Format('docker.io/{0}/{1}:{2} --build-arg USER_ID={3} --build-arg GROUP_ID={4}', $user, $name, $cpu, $USER_ID, $GROUP_ID))
+	$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
+	$grpid = @([string]::Format('GROUP_ID={0}', $GROUP_ID))
+	$userid = @([string]::Format('USER_ID={0}', $USER_ID))
 	$dockerfile = @([string]::Format('dockerfile.user.{0}', $cpu))
 } else {
 	$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
@@ -58,6 +60,12 @@ if ($userenabled) {
 
 if (Test-Path $dockerfile) {
 
-	write-host "docker build -t $container -f $dockerfile ."
-    docker build -t $container -f $dockerfile .
+	if ($userenabled) {
+		write-host "docker build -t $container --build-arg $userid --build-arg $grpid -f $dockerfile ."
+		docker build -t $container --build-arg $userid --build-arg $grpid -f $dockerfile .
+	}
+	else {
+		write-host "docker build -t $container -f $dockerfile ."
+		docker build -t $container -f $dockerfile .
+	}
 }
