@@ -48,9 +48,9 @@ for ($i = 0; $i -le $Args.count; $i++ ) {
 				write-host '	-g="{GROUP_ID}" or --gid="{GROUP_ID}"'
 				write-host '	-p="{PS_VERSION}" or --pwsh={PS_VERSION}'
 				write-host 'Default: root user PS_VERSION="7.4.3"'
-				write-host ' 	docker-build.ps1 -p="7.4.4"'
+				write-host '	'$($MyInvocation.MyCommand.Name) '-p="7.4.4"'
 				write-host 'Default: non-root user USER_ID="1000" GROUP_ID="1000" PS_VERSION="7.4.3"'
-				write-host '	docker-build.ps1 -p="7.4.4" -u="1001" -g="1001" -e'
+				write-host '	'$($MyInvocation.MyCommand.Name) '-p="7.4.4" -u="1001" -g="1001" -e'
 				exit 1
                 } 
 			}
