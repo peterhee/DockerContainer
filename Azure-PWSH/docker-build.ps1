@@ -48,11 +48,11 @@ for ($i = 0; $i -le $Args.count; $i++ ) {
 		}
 	}
 
-$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
-
 if ($userenabled) {
+	$container = @([string]::Format('docker.io/{0}/{1}:{2} --build-arg USER_ID={3} --build-arg GROUP_ID={4}', $user, $name, $cpu, $USER_ID, $GROUP_ID))
 	$dockerfile = @([string]::Format('dockerfile.user.{0}', $cpu))
 } else {
+	$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
 	$dockerfile = @([string]::Format('dockerfile.{0}', $cpu))
 }
 
