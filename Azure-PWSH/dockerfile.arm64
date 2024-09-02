@@ -7,7 +7,7 @@ FROM ${imageRepo}:${fromTag} AS installer-env
 
 # Default argument when not provided in the --build-arg
 ARG UBUNTU_VERSION=22.04
-ARG PS_VERSION=7.4.3
+ARG PS_VERSION=7.4.5
 ARG TZDATA=Europe/Berlin
 ARG CPU=arm64
 ARG USER_ID=1000 
@@ -18,10 +18,9 @@ ARG USER_NAME=user
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.2.6/powershell-7.2.6-linux-arm64.tar.gz
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.3.6/powershell-7.3.6-linux-x64.tar.gz
 
+
 ARG PS_PACKAGE=powershell-${PS_VERSION}-linux-${CPU}.tar.gz
 ARG PS_PACKAGE_URL=https://github.com/PowerShell/PowerShell/releases/download/v${PS_VERSION}/${PS_PACKAGE}
-
-RUN echo "${PS_PACKAGE}"
 RUN echo "${PS_PACKAGE_URL}"
 
 # Define ENVs for Localization/Globalization
@@ -85,7 +84,15 @@ RUN apt-get update -y \
           \$ErrorActionPreference = 'Stop' ; \
           \$ProgressPreference = 'SilentlyContinue' ; \
            Write-Host "'Install-Module -Name AZ **** Takes a long time ****'" ; \
-           Install-Module -Name Az -AllowClobber -Scope AllUsers -Force ;"
+           Install-Module -Name Az -AllowClobber -Scope AllUsers -Force ;" \
+    && pwsh \
+        -NoLogo \
+        -NoProfile \
+        -Command " \
+          \$ErrorActionPreference = 'Stop' ; \
+          \$ProgressPreference = 'SilentlyContinue' ; \
+           Write-Host "'Install-Module -Name Microsoft Graph **** Takes a long time ****'" ; \
+           Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force ;"
 
 # Set working directory
 WORKDIR /root
