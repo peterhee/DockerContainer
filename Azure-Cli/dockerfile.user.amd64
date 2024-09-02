@@ -17,6 +17,7 @@ ARG TZDATA=Europe/Berlin
 
 ARG MSGRAPH_PACKAGE=msgraph-cli-linux-${CPU}-${MSGRAPH_VERSION}.tar.gz
 ARG MSGRAPH_PACKAGE_URL=https://github.com/microsoftgraph/msgraph-cli/releases/download/v${MSGRAPH_VERSION}/${MSGRAPH_PACKAGE}
+RUN echo ${MSGRAPH_PACKAGE_URL}
 
 ENV LC_ALL="en_US.UTF-8" \
     LANG="en_US.UTF-8" \
