@@ -36,6 +36,7 @@ RUN apt-get update -y \
        locales \
        curl \
        jq \
+       wget \
        ca-certificates \
        gnome-keyring \
        libsecret-1-0 \
