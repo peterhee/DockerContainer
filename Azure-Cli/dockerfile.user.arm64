@@ -24,6 +24,8 @@ ENV LC_ALL="en_US.UTF-8" \
     USER=${USER_NAME} \
     TZ=${TZDATA}
 
+RUN mkdir -p /opt/microsoft/msgraph
+
 # Install dependencies and clean up
 RUN apt-get update -y \
     && apt-get upgrade -y \
