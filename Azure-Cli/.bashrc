@@ -108,9 +108,14 @@ fi
 #    . /etc/bash_completion
 #fi
 
-PROC=(uname -p)
+PROC=$(uname -p)
 
-export PATH=$PATH:/root/bin
+# Am I root?, need root!
+if [[ "$EUID" -ne 0 ]]; then
+    export PATH=$PATH:/home/$USER/bin
+else
+    export PATH=$PATH:/root/bin
+fi
 
 if [ $PROC == "x86_64" ]; then
     setcap cap_ipc_lock=+ep $(which gnome-keyring-daemon)
