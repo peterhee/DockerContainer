@@ -108,11 +108,15 @@ fi
 #    . /etc/bash_completion
 #fi
 
-setcap cap_ipc_lock=+ep $(which gnome-keyring-daemon)
-export DBUS_SESSION_BUS_ADDRESS=$(dbus-daemon --session --fork --print-address)
-export KEYRING_PASSWORD="MS2dreambox"
-dbus-run-session -- echo "$KEYRING_PASSWORD" | gnome-keyring-daemon --daemonize --components=secrets --unlock
+PROC=(uname -p)
 
 export PATH=$PATH:/root/bin
-export PATH=$PATH:/opt/microsoft/msgraph
+
+if [ $PROC == "x86_64" ]; then
+    setcap cap_ipc_lock=+ep $(which gnome-keyring-daemon)
+    export DBUS_SESSION_BUS_ADDRESS=$(dbus-daemon --session --fork --print-address)
+    export KEYRING_PASSWORD="MS2dreambox"
+    dbus-run-session -- echo "$KEYRING_PASSWORD" | gnome-keyring-daemon --daemonize --components=secrets --unlock
+    export PATH=$PATH:/opt/microsoft/msgraph
+fi
 
