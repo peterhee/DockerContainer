@@ -118,7 +118,7 @@ else
 fi
 
 if [ $PROC == "x86_64" ]; then
-   
+    # https://learn.microsoft.com/en-us/graph/cli/installation?tabs=linux
     # setcap cap_ipc_lock=+ep $(which gnome-keyring-daemon)
     export DBUS_SESSION_BUS_ADDRESS=$(dbus-daemon --session --fork --print-address)
     export KEYRING_PASSWORD="MS2dreambox"

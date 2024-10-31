@@ -12,6 +12,8 @@ ARG TZDATA=Europe/Berlin
 # Donwload: https://github.com/microsoftgraph/msgraph-cli/releases/download/v1.9.0/msgraph-cli-linux-arm64-1.9.0.tar.gz
 # Download: https://github.com/microsoftgraph/msgraph-cli/releases/download/v1.9.0/msgraph-cli-linux-arm64-1.9.0.tar.gz
 
+
+# https://learn.microsoft.com/en-us/graph/cli/installation?tabs=linux
 ARG MSGRAPH_PACKAGE=msgraph-cli-linux-${CPU}-${MSGRAPH_VERSION}.tar.gz
 ARG MSGRAPH_PACKAGE_URL=https://github.com/microsoftgraph/msgraph-cli/releases/download/v${MSGRAPH_VERSION}/${MSGRAPH_PACKAGE}
 RUN echo ${MSGRAPH_PACKAGE_URL}
