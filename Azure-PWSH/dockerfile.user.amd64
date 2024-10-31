@@ -103,7 +103,7 @@ RUN export POWERSHELL_TELEMETRY_OPTOUT=1 \
     \$ErrorActionPreference = 'Stop' ; \
     \$ProgressPreference = 'SilentlyContinue' ; \
     Write-Host "'Install-Module -Name Microsoft Graph **** Takes a long time ****'" ; \
-    Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force ;
+    Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force ;"
            
 USER ${USER_NAME}
 
