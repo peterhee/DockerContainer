@@ -45,6 +45,7 @@ RUN apt-get update -y \
        jq \
        wget \
        ca-certificates \
+       libcap2-bin \
        gnome-keyring \
        libsecret-1-0 \
     && echo ${LC_ALL} >>/etc/default/locale \
