@@ -4,7 +4,17 @@ ARG imageRepo=ubuntu
 
 FROM ${imageRepo}:${fromTag} AS installer-env
 
+ARG MSGRAPH_VERSION=1.9.0
+ARG CPU=x64
 ARG TZDATA=Europe/Berlin
+
+# Download: https://github.com/microsoftgraph/msgraph-cli/releases/download/v1.9.0/msgraph-cli-linux-x64-1.9.0.tar.gz
+# Donwload: https://github.com/microsoftgraph/msgraph-cli/releases/download/v1.9.0/msgraph-cli-linux-arm64-1.9.0.tar.gz
+# Download: https://github.com/microsoftgraph/msgraph-cli/releases/download/v1.9.0/msgraph-cli-linux-arm64-1.9.0.tar.gz
+
+ARG MSGRAPH_PACKAGE=msgraph-cli-linux-${CPU}-${MSGRAPH_VERSION}.tar.gz
+ARG MSGRAPH_PACKAGE_URL=https://github.com/microsoftgraph/msgraph-cli/releases/download/v${MSGRAPH_VERSION}/${MSGRAPH_PACKAGE}
+RUN echo ${MSGRAPH_PACKAGE_URL}
 
 ENV LC_ALL="en_US.UTF-8" \
     LANG="en_US.UTF-8" \
@@ -12,6 +22,7 @@ ENV LC_ALL="en_US.UTF-8" \
 
 RUN mkdir -p /root/scripts
 RUN mkdir -p /root/.azure
+RUN mkdir -p /opt/microsoft/msgraph
 
 COPY install.py /root/scripts/install.py
 COPY install.sh /root/scripts/install.sh
@@ -31,7 +42,10 @@ RUN apt-get update -y \
        locales \
        curl \
        jq \
+       wget \
        ca-certificates \
+       gnome-keyring \
+       libsecret-1-0 \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
     && locale-gen ${LANG} && update-locale \
@@ -39,9 +53,13 @@ RUN apt-get update -y \
     && chmod 755 /root/scripts/install.sh \
     && /root/scripts/install.sh
 
+RUN wget -O /tmp/msgraph.tar.gz ${MSGRAPH_PACKAGE_URL} >>dev/null \
+    && tar -zxf /tmp/msgraph.tar.gz -C /opt/microsoft/msgraph
+
 # Clean Up
 RUN rm /root/scripts/install.sh
 RUN rm /root/scripts/install.py
+RUN rm /tmp/msgraph.tar.gz
 
 # Set working directory
 WORKDIR /root

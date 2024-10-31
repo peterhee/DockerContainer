@@ -7,12 +7,24 @@ FROM ${imageRepo}:${fromTag} AS installer-env
 ARG USER_ID=1000 
 ARG GROUP_ID=1000
 ARG USER_NAME=user
+ARG MSGRAPH_VERSION=1.9.0
+ARG CPU=x64
 ARG TZDATA=Europe/Berlin
+
+# Download: https://github.com/microsoftgraph/msgraph-cli/releases/download/v1.9.0/msgraph-cli-linux-x64-1.9.0.tar.gz
+# Donwload: https://github.com/microsoftgraph/msgraph-cli/releases/download/v1.9.0/msgraph-cli-linux-arm64-1.9.0.tar.gz
+# Download: https://github.com/microsoftgraph/msgraph-cli/releases/download/v1.9.0/msgraph-cli-linux-arm64-1.9.0.tar.gz
+
+ARG MSGRAPH_PACKAGE=msgraph-cli-linux-${CPU}-${MSGRAPH_VERSION}.tar.gz
+ARG MSGRAPH_PACKAGE_URL=https://github.com/microsoftgraph/msgraph-cli/releases/download/v${MSGRAPH_VERSION}/${MSGRAPH_PACKAGE}
+RUN echo ${MSGRAPH_PACKAGE_URL}
 
 ENV LC_ALL="en_US.UTF-8" \
     LANG="en_US.UTF-8" \
     USER=${USER_NAME} \
     TZ=${TZDATA}
+
+RUN mkdir -p /opt/microsoft/msgraph
 
 # Install dependencies and clean up
 RUN apt-get update -y \
@@ -27,11 +39,17 @@ RUN apt-get update -y \
        locales \
        curl \
        jq \
+       wget \
        ca-certificates \
+       gnome-keyring \
+       libsecret-1-0 \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && locale-gen ${LANG} && update-locale
+
+RUN wget -O /tmp/msgraph.tar.gz ${MSGRAPH_PACKAGE_URL} >>dev/null \
+    && tar -zxf /tmp/msgraph.tar.gz -C /opt/microsoft/msgraph
 
 # Create user and group
 # RUN addgroup --gid ${GROUP_ID} ${USER_NAME}

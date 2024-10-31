@@ -1,7 +1,12 @@
 ## Create the container using source from the git repository
 
-Check the current powershell version for Ubuntu Linux (Currently 7.4.4)
-https://github.com/PowerShell/PowerShell/releases/tag/v7.4.4
+Check the current powershell version for Ubuntu Linux (Currently 7.4.5)
+[Powershell Releases](https://github.com/PowerShell/PowerShell/releases)
+
+Module installed
+
+- Microsoft Graph
+- Microsoft Azure
 
 1. Create Image using the dockerfile
 
@@ -17,17 +22,17 @@ https://github.com/PowerShell/PowerShell/releases/tag/v7.4.4
             -f dockerfile.amd64 .
    ```
 
-   3. Create Image using dockerfile and specify Powershell version (ARM64)
+   2. Create Image using dockerfile and specify Powershell version (ARM64)
 
    ```bash
       # ARM64
       docker build -t docker.io/[YourName]/azure-pwsh \
-            --build-arg PS_VERSION="7.4.4"  \
+            --build-arg PS_VERSION="7.4.5"  \
             -f dockerfile.arm64 .
 
       # AMD64/x64
       docker build -t docker.io/[YourName]/azure-pwsh \
-            --build-arg PS_VERSION="7.4.4"  \
+            --build-arg PS_VERSION="7.4.5"  \
             -f dockerfile.amd64 .
    ```
 

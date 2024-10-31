@@ -6,7 +6,7 @@ ARG imageRepo=ubuntu
 FROM ${imageRepo}:${fromTag} AS installer-env
 
 ARG UBUNTU_VERSION=22.04
-ARG PS_VERSION=7.4.3
+ARG PS_VERSION=7.4.5
 ARG TZDATA=Europe/Berlin
 ARG CPU=x64
 
@@ -80,7 +80,15 @@ RUN apt-get update -y \
           \$ErrorActionPreference = 'Stop' ; \
           \$ProgressPreference = 'SilentlyContinue' ; \
            Write-Host "'Install-Module -Name AZ **** Takes a long time ****'" ; \
-           Install-Module -Name Az -AllowClobber -Scope AllUsers -Force ;"
+           Install-Module -Name Az -AllowClobber -Scope AllUsers -Force ;" \
+    && pwsh \
+        -NoLogo \
+        -NoProfile \
+        -Command " \
+          \$ErrorActionPreference = 'Stop' ; \
+          \$ProgressPreference = 'SilentlyContinue' ; \
+           Write-Host "'Install-Module -Name Microsoft Graph **** Takes a long time ****'" ; \
+           Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force ;
 
 # Set working directory
 WORKDIR /root
