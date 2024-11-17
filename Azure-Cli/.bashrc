@@ -123,6 +123,6 @@ if [ $PROC == "x86_64" ]; then
     export DBUS_SESSION_BUS_ADDRESS=$(dbus-daemon --session --fork --print-address)
     export KEYRING_PASSWORD="MS2dreambox"
     dbus-run-session -- echo "$KEYRING_PASSWORD" | gnome-keyring-daemon --daemonize --components=secrets --unlock
-    export PATH=$PATH:/opt/microsoft/msgraph
+    # export PATH=$PATH:/opt/microsoft/msgraph
 fi
 
