@@ -1,32 +1,17 @@
-# Docker image file that describes an Ubuntu18.04 image with PowerShell installed from Microsoft APT Repo
-# INTEL use Image Repo ubuntu
-# ARM64 use Image Repo arm64v8/ubuntu
-ARG IMAGE=ubuntu
-ARG TAG=22.04
+FROM node:alpine
 
-FROM ${IMAGE}:${TAG} AS installer-env
+RUN mkdir -p /data
 
-# Default argument when not provided in the --build-arg
-ARG TZDATA=Europe/Berlin
+WORKDIR /usr/app
 
-# INTEL use x64 to get the Powershell installation files
-# ARM use arm64 to get the Powershell installation files
-ARG CPU=x64
-ARG TAG=${TAG}
+RUN apk add chromium
+RUN npm install @mermaid-js/mermaid-cli
 
-# Timezone
-ARG TZDATA=Europe/Berlin
+ADD puppeteer-config.json  /puppeteer-config.json
 
-# Default user and group id
-ARG USER_ID=1000 
-ARG GROUP_ID=1000
-ARG USER_NAME=user
+WORKDIR /data
 
-# Set environment variables
-ENV LC_ALL="en_US.UTF-8" \
-    LANG="en_US.UTF-8" \
-    TZ=${TZDATA}
+ENTRYPOINT ["/usr/app/node_modules/.bin/mmdc", "-p", "/puppeteer-config.json"]
+CMD [ "--help" ]
 
-# Create directories
-RUN mkdir -p /home/${USER_NAME}
-
+# CMD [ "/bin/bash" ] 

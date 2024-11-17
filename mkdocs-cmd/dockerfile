@@ -6,7 +6,7 @@ ARG TAG=22.04
 
 FROM ${IMAGE}:${TAG} AS installer-env
 
-ARG UBUNTU_VERSION=${TAG}
+# Timezone
 ARG TZDATA=Europe/Berlin
 
 # Default user and group id
@@ -62,10 +62,8 @@ RUN if [ -z $(getent passwd ${USER_ID}) ]; then adduser --disabled-password --ge
 # Set permissions
 RUN chown -R ${USER_ID}:${GROUP_ID} /site
 RUN chown -R ${USER_ID}:${GROUP_ID} /scripts
-RUN chmod 755 /scripts/entrypoint.sh
-
-# Switch to the user
 RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}
+RUN chmod 755 /scripts/entrypoint.sh
 
 # Switch to the user
 USER ${USER}

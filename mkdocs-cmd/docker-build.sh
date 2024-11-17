@@ -1,4 +1,6 @@
-#!/bin/bash
+!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
 
 check_os() {
     if [ $(uname) == "Darwin" ]; then
@@ -17,24 +19,37 @@ check_os() {
 
 USER_ID=$(id -u)
 GROUP_ID=$(id -g)
+USER_NAME=$USER
+UBUNTU_VERSION="22.04"
 
+userenabled=0
 # parse commandline
+
 for i in "$@"
 do
     case $i in
         -u=*|--uid=*)
         USER_ID="${i#*=}"
         ;;
+        -n=*|--name=*)
+        USER_NAME="${i#*=}"
+        ;;
         -g=*|--gid=*)
         GROUP_ID="${i#*=}"
         ;;
-    *)
+        *)        
+        echo "ERROR WRONG PARAMETER: $i"
         echo "*** Command line help ***"
-        echo Default: USER_ID=$USER_ID GROUP_ID=$GROUP_ID
-        echo -u="{USER_ID}" or --uid="{USER_ID}"
-        echo -g="{GROUP_ID}" or --gid="{GROUP_ID}"
+        echo ' -u="{USER_ID}" or --uid="{USER_ID}"'
+        echo ' -n="{USER_NAME}" or --name="{USER_NAME}"'
+        echo ' -g="{GROUP_ID}" or --gid="{GROUP_ID}"'
+        echo ' '
+        echo 'Default: root user'
+        echo ' '${0##*/}
+        echo 'Example default: non-root user USER_ID="$USER_ID" GROUP_ID="$GROUP_ID"'
+        echo ' '${0##*/} '-u="1001" -g="1001" -e'
         exit 1
-    ;;
+        ;;
     esac
 done
 
@@ -43,18 +58,19 @@ name="mkdocs-cmd"
 cpu=$(uname -m)
 
 case "$cpu" in
-     "x86_64" ) cpu="amd64";;
-     *) cpu="arm64";;
+     "x86_64" ) cpu="x64"
+        IMAGE_REPO=ubuntu
+        ;;
+     *) cpu="arm64"
+        IMAGE_REPO=arm64v8/ubuntu
+        ;;
 esac
 
 check_os
 
 echo CPU Type $cpu
-echo USER_ID: $USER_ID
-echo GROUP_ID: $GROUP_ID
 
 # Build Docker Container
-if [ -f dockerfile.$cpu ]; then
-    docker build -t docker.io/$user/$name:$cpu --build-arg USER_ID=$USER_ID --build-arg GROUP_ID=$GROUP_ID -f dockerfile.$cpu .
-    # docker tag docker.io/$user/$name docker.io/$user/$name:$cpu
+if [ -f dockerfile ]; then
+    docker build -t docker.io/$user/$name:$cpu --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID -f dockerfile .
 fi
