@@ -73,7 +73,8 @@ RUN apt-get update -y \
 # MS Graph CLI not supported on ARM64 Linux    
 RUN wget -O /tmp/msgraph.tar.gz ${MSGRAPH_PACKAGE_URL} >>dev/null \
     && tar -zxf /tmp/msgraph.tar.gz -C /opt/microsoft/msgraph \
-    && ln -s /opt/microsoft/msgraph/mgc /usr/local/bin/mgc
+    && ln -s /opt/microsoft/msgraph/mgc /usr/local/bin/mgc \
+    && rm -f /tmp/msgraph.tar.gz
 
 # Create user and group
 # RUN addgroup --gid ${GROUP_ID} ${USER_NAME}
@@ -90,7 +91,6 @@ RUN /home/${USER_NAME}/scripts/install.sh ${USER_NAME}
 # Clean Up
 RUN rm -f /home/${USER_NAME}/scripts/install.sh
 RUN rm -f /home/${USER_NAME}/scripts/install.py
-RUN rm -f /tmp/msgraph.tar.gz
 
 # Set working directory
 WORKDIR /home/${USER_NAME}
