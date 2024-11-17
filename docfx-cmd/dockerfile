@@ -1,11 +1,15 @@
 # Docker image file that describes an Ubuntu18.04 image with PowerShell installed from Microsoft APT Repo
-ARG FROMTAG=22.04
-ARG IMAGEREPO=arm64v8/ubuntu
+# INTEL use Image Repo ubuntu
+# ARM64 use Image Repo arm64v8/ubuntu
+ARG IMAGE=ubuntu
+ARG TAG=22.04
 
-FROM ${IMAGEREPO}:${FROMTAG} AS installer-env
+FROM ${IMAGE}:${TAG} AS installer-env
 
+# Timezone
 ARG TZDATA=Europe/Berlin
 
+# Set environment variables
 ENV LC_ALL="en_US.UTF-8" \
     LANG="en_US.UTF-8" \
     TZ=${TZDATA} \
@@ -16,6 +20,7 @@ ENV LC_ALL="en_US.UTF-8" \
 # DOCFX Releases
 # https://github.com/dotnet/docfx/releases
 
+# Install required packages
 RUN apt-get update -y \
     && apt-get upgrade -y \
     && apt-get install unzip wget nginx git libunwind8 dotnet-sdk-7.0 locales -y \
@@ -25,6 +30,8 @@ RUN apt-get update -y \
     && locale-gen ${LANG} && update-locale
 
 # Create source directory
+COPY .bashrc /root/.bashrc
+COPY .bash_aliases /root/.bash_aliases
 RUN mkdir -p /source
 RUN mkdir -p /scripts
 
@@ -45,5 +52,5 @@ WORKDIR /source
 # Expose port 80
 EXPOSE 80
 
-ENTRYPOINT [ "/scripts/entrypoint.sh" ]
-# CMD [ "/bin/bash" ] 
+# ENTRYPOINT [ "/scripts/entrypoint.sh" ]
+CMD [ "/bin/bash" ] 

@@ -8,10 +8,13 @@ FROM ${IMAGE}:${TAG} AS installer-env
 
 # Default argument when not provided in the --build-arg
 ARG TZDATA=Europe/Berlin
+
 # INTEL use x64 to get the Powershell installation files
 # ARM use arm64 to get the Powershell installation files
 ARG CPU=x64
 ARG TAG=${TAG}
+
+# Timezone
 ARG TZDATA=Europe/Berlin
 
 # Parameters msgraph-cli

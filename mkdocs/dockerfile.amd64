@@ -1,9 +1,12 @@
-ARG fromTag=22.04
-ARG imageRepo=ubuntu
+# Docker image file that describes an Ubuntu18.04 image with PowerShell installed from Microsoft APT Repo
+# INTEL use Image Repo ubuntu
+# ARM64 use Image Repo arm64v8/ubuntu
+ARG IMAGE=ubuntu
+ARG TAG=22.04
 
-FROM ${imageRepo}:${fromTag} AS installer-env
+FROM ${IMAGE}:${TAG} AS installer-env
 
-ARG UBUNTU_VERSION=22.04
+ARG UBUNTU_VERSION=${TAG}
 ARG TZDATA=Europe/Berlin
 ARG USER_ID=1000 
 ARG GROUP_ID=1000

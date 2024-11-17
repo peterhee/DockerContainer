@@ -1,35 +1,47 @@
-ARG fromTag=22.04
-ARG imageRepo=arm64v8/ubuntu
+# Docker image file that describes an Ubuntu18.04 image with PowerShell installed from Microsoft APT Repo
+# INTEL use Image Repo ubuntu
+# ARM64 use Image Repo arm64v8/ubuntu
+ARG IMAGE=ubuntu
+ARG TAG=22.04
 
-FROM ${imageRepo}:${fromTag} AS installer-env
+FROM ${IMAGE}:${TAG} AS installer-env
 
-ARG UBUNTU_VERSION=22.04
-ARG PS_VERSION=0.125.1
+# INTEL use x64 to get the Powershell installation files
+# ARM use arm64 to get the Powershell installation files
+ARG CPU=x64
+
+# Timezone
 ARG TZDATA=Europe/Berlin
-ARG CPU=arm64
-ARG USER_ID=501 
-ARG GROUP_ID=20
+
+# Default user and group id
+ARG USER_ID=1000 
+ARG GROUP_ID=1000
 ARG USER_NAME=user
 
+# Hugo variables
 # https://github.com/gohugoio/hugo/releases/download/v0.125.1/hugo_extended_0.125.1_linux-arm64.deb
 # https://github.com/gohugoio/hugo/releases/download/v0.125.1/hugo_extended_0.125.1_linux-amd64.deb
-
-ARG HUGO_PACKAGE=hugo_extended_${PS_VERSION}_linux-${CPU}.deb
-ARG HUGO_PACKAGE_URL=https://github.com/gohugoio/hugo/releases/download/v${PS_VERSION}/${HUGO_PACKAGE}
+ARG HUGO_VERSION=0.125.1
+ARG HUGO_PACKAGE=hugo_extended_${HUGO_VERSION}_linux-${CPU}.deb
+ARG HUGO_PACKAGE_URL=https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${HUGO_PACKAGE}
 
 # Define ENVs for Localization/Globalization
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     LC_ALL="en_US.UTF-8" \
     LANG="en_US.UTF-8" \
     USER=${USER_NAME} \
-    TZ=${TZDATA} \
+    USER_ID=${USER_ID} \
     GROUP_ID=${GROUP_ID} \
-    USER_ID=${USER_ID}
+    TZ=${TZDATA}
     # set a fixed location for the Module analysis cache
 
+# Set the timezone
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Create directories
 RUN mkdir /site
 RUN mkdir -p /scripts
+RUN mkdir -p /home/${USER_NAME}
 
 # Configure the tools and scripts
 COPY entrypoint.sh /scripts
@@ -45,27 +57,35 @@ RUN apt-get update -y \
     && apt-get install --no-install-recommends -y \
     locales
 
+# Configure the locale
 RUN echo 'LC_ALL="en_US.UTF-8"' >>/etc/default/locale \
     && echo 'LANG="en_US.UTF-8"'  >>/etc/default/locale \
     && locale-gen $LANG && update-locale
 
+# Install Hugo
 RUN wget -O /tmp/hugo.deb ${HUGO_PACKAGE_URL} >>/dev/null \
     && dpkg -i /tmp/hugo.deb \
     && locale-gen $LANG && update-locale \
-    rm /tmp/hugo.deb
+    rm -f /tmp/hugo.deb
 
 # Create user and group
 RUN  if [ -z $(getent group ${GROUP_ID}) ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
 RUN  if [ -z $(getent passwd ${USER_ID}) ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
+
+# Set permissions
 RUN chown -R ${USER_ID}:${GROUP_ID} /site
 RUN chown -R ${USER_ID}:${GROUP_ID} /scripts
+RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}
 
+# Switch to the user
 USER ${USER}
 
+# Expose the port
 EXPOSE 1313
 
 # Set working directory
 WORKDIR /site
 
+# Start the Hugo server
 ENTRYPOINT [ "/scripts/entrypoint.sh" ]
 # CMD [ "/bin/bash" ]

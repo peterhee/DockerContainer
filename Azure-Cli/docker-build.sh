@@ -82,11 +82,11 @@ echo USER enabled: $userenabled
 
 # Build Docker Container
 if [ $userenabled = 1 ]; then
-    if [ -f dockerfile.user.$cpu ]; then
+    if [ -f dockerfile.user ]; then
         docker build -t docker.io/$user/$name:$cpu --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID --build-arg MSGRAPH_VERSION=$MSGRAPH_VERSION -f dockerfile.user .
     fi
 else
-    if [ -f dockerfile.$cpu ]; then
+    if [ -f dockerfile ]; then
         docker build -t docker.io/$user/$name:$cpu --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg MSGRAPH_VERSION=$MSGRAPH_VERSION -f dockerfile .
     fi
 fi

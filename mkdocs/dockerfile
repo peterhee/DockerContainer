@@ -6,6 +6,10 @@ ARG TAG=22.04
 
 FROM ${IMAGE}:${TAG} AS installer-env
 
+# Timezone
+ARG TZDATA=Europe/Berlin
+
+# Default user and group id
 ARG USER_ID=1000 
 ARG GROUP_ID=1000
 ARG USER_NAME=user
@@ -20,17 +24,19 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     USER_ID=${USER_ID}
     # set a fixed location for the Module analysis cache
 
+# Set the timezone
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
 
-RUN mkdir -p /site
+# Create directories 
+RUN mkdir /site
 RUN mkdir -p /scripts
-
-COPY .bashrc /home/${USER_NAME}/.bashrc
-COPY .bash_aliases /home/${USER_NAME}/.bash_aliases
+RUN mkdir -p /home/${USER_NAME}
 
 # Configure the tools and scripts
+COPY .bashrc /home/${USER_NAME}/.bashrc
+COPY .bash_aliases /home/${USER_NAME}/.bash_aliases
 COPY entrypoint.sh /scripts
-RUN chmod 755 /scripts/entrypoint.sh
+
 
 # Install dependencies and clean up
 RUN apt-get update -y \
@@ -44,6 +50,7 @@ RUN apt-get update -y \
     weasyprint \
     && apt-get install --no-install-recommends -y
 
+# Configure the locale
 RUN echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
     && locale-gen $LANG && update-locale
@@ -51,12 +58,17 @@ RUN echo ${LC_ALL} >>/etc/default/locale \
 # Create user and group
 RUN if [ -z $(getent group ${GROUP_ID}) ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
 RUN if [ -z $(getent passwd ${USER_ID}) ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
+
+# Set permissions
 RUN chown -R ${USER_ID}:${GROUP_ID} /site
 RUN chown -R ${USER_ID}:${GROUP_ID} /scripts
+RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}
+RUN chmod 755 /scripts/entrypoint.sh
 
-
+# Switch to the user
 USER ${USER}
 
+# Install mkdocs and extensions
 RUN pip3 install mkdocs \
     && pip3 install markdown_extensions \
     && pip3 install pymdown-extensions \
@@ -69,12 +81,13 @@ RUN pip3 install mkdocs \
     && pip3 install mkdocs-literate-nav \
     && pip3 install 'mkdocstrings[crystal,python]' \
     && pip3 install mkdocs-click
- 
+
+# Expose the port
 EXPOSE 8000
 
 # Set working directory
 WORKDIR /site
 
-# ENTRYPOINT [ "/scripts/entrypoint.sh" ]
-CMD [ "/bin/bash" ]
-
+# Start the mkdocs server
+ENTRYPOINT [ "/scripts/entrypoint.sh" ]
+# CMD [ "/bin/bash" ]

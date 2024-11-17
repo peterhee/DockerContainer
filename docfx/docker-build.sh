@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
 
 check_os() {
     if [ $(uname) == "Darwin" ]; then
@@ -15,13 +17,18 @@ check_os() {
     fi
 }
 
+UBUNTU_VERSION="22.04"
 user="pheese"
 name="generate-docfx"
 cpu=$(uname -m)
 
 case "$cpu" in
-     "x86_64" ) cpu="amd64";;
-     *) cpu="arm64";;
+     "x86_64" ) cpu="x64"
+        IMAGE_REPO=ubuntu
+        ;;
+     *) cpu="arm64"
+        IMAGE_REPO=arm64v8/ubuntu
+        ;;
 esac
 
 check_os
@@ -29,7 +36,6 @@ check_os
 echo CPU Type $cpu
 
 # Build Docker Container
-if [ -f dockerfile.$cpu ]; then
-    docker build -t docker.io/$user/$name:$cpu -f dockerfile.$cpu .
-    # docker tag docker.io/$user/$name docker.io/$user/$name:$cpu
+if [ -f dockerfile ]; then
+    docker build -t docker.io/$user/$name:$cpu --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION -f dockerfile .
 fi

@@ -73,10 +73,10 @@ if ($userenabled) {
 	$userid = @([string]::Format('USER_ID={0}', $USER_ID))
 	$username = @([string]::Format('USER_NAME={0}', $USER_NAME)) 
 	$psversion =  @([string]::Format('PS_VERSION={0}', $PS_VERSION))
-	$dockerfile = @([string]::Format('dockerfile.user.{0}', $cpu))
+	$dockerfile = "dockerfile.user"
 } else {
 	$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
-	$dockerfile = @([string]::Format('dockerfile.{0}', $cpu))
+	$dockerfile = "dockerfile"
 }
 
 if (Test-Path $dockerfile) {

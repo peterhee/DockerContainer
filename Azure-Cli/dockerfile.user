@@ -12,6 +12,8 @@ ARG TZDATA=Europe/Berlin
 # ARM use arm64 to get the Powershell installation files
 ARG CPU=x64
 ARG TAG=${TAG}
+
+# Timezone
 ARG TZDATA=Europe/Berlin
 
 # Default user and group id
