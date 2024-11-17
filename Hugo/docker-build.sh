@@ -67,8 +67,9 @@ user="pheese"
 name="hugo"
 cpu=$(uname -m)
 
+# HUGO supports amd64 and arm64 as variables
 case "$cpu" in
-     "x86_64" ) cpu="amd64"
+     "x86_64") cpu="amd64"
         IMAGE_REPO=ubuntu
         ;;
      *) cpu="arm64"
