@@ -68,7 +68,7 @@ name="hugo"
 cpu=$(uname -m)
 
 case "$cpu" in
-     "x86_64" ) cpu="x64"
+     "x86_64" ) cpu="amd64"
         IMAGE_REPO=ubuntu
         ;;
      *) cpu="arm64"
