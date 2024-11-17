@@ -1,15 +1,17 @@
 # Docker image file that describes an Ubuntu18.04 image with PowerShell installed from Microsoft APT Repo
-ARG fromTag=22.04
-ARG imageRepo=arm64v8/ubuntu
+# INTEL use Image Repo ubuntu
+# ARM64 use Image Repo arm64v8/ubuntu
+ARG IMAGE=ubuntu
+ARG TAG=22.04
 
-FROM ${imageRepo}:${fromTag} AS installer-env
+FROM ${IMAGE}:${TAG} AS installer-env
 
 # Default argument when not provided in the --build-arg
-ARG UBUNTU_VERSION=22.04
 ARG TZDATA=Europe/Berlin
 # INTEL use x64 to get the Powershell installation files
 # ARM use arm64 to get the Powershell installation files
-ARG CPU=arm64
+ARG CPU=x64
+ARG TAG=${TAG}
 
 # Default user and group id
 ARG USER_ID=1000 
@@ -33,7 +35,7 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     TZ=${TZDATA} \
     # set a fixed location for the Module analysis cache
     PSModuleAnalysisCachePath=/var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
-    POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-Ubuntu-${UBUNTU_VERSION}
+    POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-Ubuntu-${TAG}
 
 # Create user and group
 # RUN addgroup --gid ${GROUP_ID} ${USER_NAME}
@@ -115,7 +117,7 @@ RUN export POWERSHELL_TELEMETRY_OPTOUT=1 \
 # Change Ownership
 RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}
 
-# Set USER    
+# Switch to user context    
 USER ${USER_NAME}
 
 # Set working directory

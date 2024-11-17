@@ -21,6 +21,7 @@ USER_ID=$(id -u)
 GROUP_ID=$(id -g)
 USER_NAME=$USER
 PS_VERSION="7.4.3"
+UBUNTU_VERSION="22.04"
 
 userenabled=0
 # parse commandline
@@ -66,8 +67,12 @@ name="azure-pwsh"
 cpu=$(uname -m)
 
 case "$cpu" in
-     "x86_64" ) cpu="amd64";;
-     *) cpu="arm64";;
+     "x86_64" ) cpu="x64"
+        IMAGE_REPO=ubuntu
+        ;;
+     *) cpu="arm64"
+        IMAGE_REPO=arm64v8/ubuntu
+        ;;
 esac
 
 check_os
@@ -78,10 +83,10 @@ echo USER enabled: $userenabled
 # Build Docker Container
 if [ $userenabled = 1 ]; then
     if [ -f dockerfile.user.$cpu ]; then
-        docker build -t docker.io/$user/$name:$cpu --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID --build-arg PS_VERSION=$PS_VERSION -f dockerfile.user.$cpu .
+        docker build -t docker.io/$user/$name:$cpu --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID --build-arg PS_VERSION=$PS_VERSION -f dockerfile.user .
     fi
 else
     if [ -f dockerfile.$cpu ]; then
-        docker build -t docker.io/$user/$name:$cpu --build-arg PS_VERSION=$PS_VERSION -f dockerfile.$cpu .
+        docker build -t docker.io/$user/$name:$cpu --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg PS_VERSION=$PS_VERSION -f dockerfile .
     fi
 fi

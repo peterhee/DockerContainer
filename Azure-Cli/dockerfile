@@ -1,11 +1,17 @@
 # Docker image file that describes an Ubuntu18.04 image with PowerShell installed from Microsoft APT Repo
-ARG fromTag=22.04
-ARG imageRepo=ubuntu
+# INTEL use Image Repo ubuntu
+# ARM64 use Image Repo arm64v8/ubuntu
+ARG IMAGE=ubuntu
+ARG TAG=22.04
 
-FROM ${imageRepo}:${fromTag} AS installer-env
+FROM ${IMAGE}:${TAG} AS installer-env
 
-# Parameters
+# Default argument when not provided in the --build-arg
+ARG TZDATA=Europe/Berlin
+# INTEL use x64 to get the Powershell installation files
+# ARM use arm64 to get the Powershell installation files
 ARG CPU=x64
+ARG TAG=${TAG}
 ARG TZDATA=Europe/Berlin
 
 # Parameters msgraph-cli
@@ -59,11 +65,14 @@ RUN apt-get update -y \
     && chmod 755 /root/scripts/install.sh \
     && /root/scripts/install.sh
 
-# Install msgraph-cli
-RUN wget -O /tmp/msgraph.tar.gz ${MSGRAPH_PACKAGE_URL} >>dev/null \
+# MS Graph CLI not supported on x64 Linux   
+# Install msgraph-cli only for x64
+RUN if [ "$CPU" = "x64" ]; then \
+    wget -O /tmp/msgraph.tar.gz ${MSGRAPH_PACKAGE_URL} >>dev/null \
     && tar -zxf /tmp/msgraph.tar.gz -C /opt/microsoft/msgraph \
     && ln -s /opt/microsoft/msgraph/mgc /usr/local/bin/mgc \
-    && rm -f /tmp/msgraph.tar.gz
+    && rm -f /tmp/msgraph.tar.gz; \
+    fi
 
 # Clean Up
 RUN rm -f /root/scripts/install.sh

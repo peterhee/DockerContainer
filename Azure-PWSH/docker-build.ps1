@@ -5,6 +5,7 @@ $cpu = "arm64"
 $USER_ID = "1000"
 $GROUP_ID = "1000"
 $PS_VERSION="7.4.3"
+$UBUNTU_VERSION = "22.04"
 
 $osarchitecture = $(Get-ComputerInfo).OsArchitecture
 write-host $osarchitecture
@@ -12,10 +13,12 @@ write-host $osarchitecture
 if ($osarchitecture.StartsWith("ARM"))
 {
 	$cpu = "arm64"
+	$IMAGE_REPO ="arm64v8/ubuntu"
 }
 else
 {
-	$cpu ="amd64"
+	$cpu ="x64"
+	$IMAGE_REPO = "ubuntu"
 }
 
 
@@ -40,6 +43,10 @@ for ($i = 0; $i -le $Args.count; $i++ ) {
 				{
 					$PS_VERSION = $Args[$i].Split("=")[1]
 				}
+			{@("-n", "--name" -contains $_.Split("=")[0])}
+				{
+					$USER_NAME = $Args[$i].Split("=")[1]
+				}
 			default {
 				write-host $_
 				write-host "*** Command line help ***"
@@ -59,8 +66,12 @@ for ($i = 0; $i -le $Args.count; $i++ ) {
 
 if ($userenabled) {
 	$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
+	$tag = @([string]::Format('TAG={0}', $UBUNTU_VERSION))
+	$cpu_arg = @([string]::Format('CPU={0}', $cpu))
+	$image = @([string]::Format('IMAGE={0}', $IMAGE_REPO))
 	$grpid = @([string]::Format('GROUP_ID={0}', $GROUP_ID))
 	$userid = @([string]::Format('USER_ID={0}', $USER_ID))
+	$username = @([string]::Format('USER_NAME={0}', $USER_NAME)) 
 	$psversion =  @([string]::Format('PS_VERSION={0}', $PS_VERSION))
 	$dockerfile = @([string]::Format('dockerfile.user.{0}', $cpu))
 } else {
@@ -71,7 +82,7 @@ if ($userenabled) {
 if (Test-Path $dockerfile) {
 
 	if ($userenabled) {
-		write-host "docker build -t $container --build-arg $psversion --build-arg $userid --build-arg $grpid -f $dockerfile ."
+		write-host "docker build -t $container --build-arg $cpu_arg --build-arg $image --build-arg $tag --build-arg $psversion --build-arg $userid --build-arg $username --build-arg $grpid -f $dockerfile ."
 		docker build -t $container --build-arg $psversion --build-arg $userid --build-arg $grpid -f $dockerfile .
 	}
 	else {
