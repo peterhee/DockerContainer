@@ -44,6 +44,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && mkdir -p /opt/microsoft/powershell/7 \
     && mkdir -p /var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
     && mkdir -p /home/${USER_NAME}/.config/powershell \
+    && mkdir -p /home/${USER_NAME}/.local \
     && mkdir -p /home/${USER_NAME}/scripts \
     && mkdir -p /home/${USER_NAME}/Json \
     && mkdir -p /home/${USER_NAME}/Certificates
@@ -110,6 +111,9 @@ RUN export POWERSHELL_TELEMETRY_OPTOUT=1 \
     \$ProgressPreference = 'SilentlyContinue' ; \
     Write-Host "'Install-Module -Name Microsoft Graph **** Takes a long time ****'" ; \
     Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force ;"
+
+# Change Ownership
+RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}
 
 # Set USER    
 USER ${USER_NAME}
