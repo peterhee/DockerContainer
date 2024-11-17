@@ -1,6 +1,6 @@
 # Docker image file that describes an Ubuntu18.04 image with PowerShell installed from Microsoft APT Repo
 ARG fromTag=22.04
-ARG imageRepo=arm64v8/ubuntu
+ARG imageRepo=ubuntu
 
 FROM ${imageRepo}:${fromTag} AS installer-env
 
