@@ -7,21 +7,22 @@ FROM ${imageRepo}:${fromTag} AS installer-env
 
 # Default argument when not provided in the --build-arg
 ARG UBUNTU_VERSION=22.04
-ARG PS_VERSION=7.4.5
 ARG TZDATA=Europe/Berlin
 # INTEL use x64 to get the Powershell installation files
 # ARM use arm64 to get the Powershell installation files
 ARG CPU=arm64
+
+# Default user and group id
 ARG USER_ID=1000 
 ARG GROUP_ID=1000
 ARG USER_NAME=user
 
+# Parameters POWERSHELL
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.2.6/powershell-7.2.6-linux-arm64.tar.gz
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.3.6/powershell-7.3.6-linux-x64.tar.gz
-
+ARG PS_VERSION=7.4.5
 ARG PS_PACKAGE=powershell-${PS_VERSION}-linux-${CPU}.tar.gz
 ARG PS_PACKAGE_URL=https://github.com/PowerShell/PowerShell/releases/download/v${PS_VERSION}/${PS_PACKAGE}
-
 RUN echo "${PS_PACKAGE}"
 RUN echo "${PS_PACKAGE_URL}"
 
@@ -36,7 +37,6 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-Ubuntu-${UBUNTU_VERSION}
 
 # Create user and group
-# Create user and group
 # RUN addgroup --gid ${GROUP_ID} ${USER_NAME}
 RUN  if [ -z $(getent group ${GROUP_ID}) ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
 RUN  if [ -z $(getent passwd ${USER_ID}) ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
@@ -44,15 +44,18 @@ RUN  if [ -z $(getent passwd ${USER_ID}) ]; then adduser --disabled-password --g
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && mkdir -p /opt/microsoft/powershell/7 \
     && mkdir -p /var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
+    && mkdir -p /home/${USER_NAME}/.config/powershell \
     && mkdir -p /home/${USER_NAME}/scripts \
     && mkdir -p /home/${USER_NAME}/Json \
     && mkdir -p /home/${USER_NAME}/Certificates
 
+# Copy files
 COPY install-az.ps1 /home/${USER_NAME}/scripts/.
 COPY update-az.ps1 /home/${USER_NAME}/scripts/.
 COPY login-az.ps1 /home/${USER_NAME}/scripts/.
 COPY .bashrc /home/${USER_NAME}/.bashrc
 COPY .bash_aliases /home/${USER_NAME}/.bash_aliases
+COPY Microsoft.PowerShell_profile.ps1 /home/${USER_NAME}/.config/powershell/Microsoft.PowerShell_profile.ps1
 
 # Install dependencies and clean up
 RUN apt-get update -y \
@@ -65,20 +68,22 @@ RUN apt-get update -y \
     gss-ntlmssp \
     openssh-client \
     jq \
+    adduser \
     mono-devel \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG} $ >>/etc/default/locale \
-    && locale-gen $LANG && update-locale \
-    && wget -O /tmp/powershell.tar.gz ${PS_PACKAGE_URL} >>/dev/null \
+    && locale-gen $LANG && update-locale
+
+# Install PowerShell from Microsoft APT Repo
+RUN wget -O /tmp/powershell.tar.gz ${PS_PACKAGE_URL} >>/dev/null \
     && tar -zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7  \
     && chmod +x /opt/microsoft/powershell/7/pwsh \
     && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh \
     # remove powershell package 
-    && rm /tmp/powershell.tar.gz
+    && rm -f /tmp/powershell.tar.gz
 
-    # intialize powershell module cache
-    # and disable telemetry
-
+# Intialize powershell module cache and disable telemetry
+# Install PowerShell module Az and Microsoft Graph
 RUN export POWERSHELL_TELEMETRY_OPTOUT=1 \
     && pwsh \
     -NoLogo \
@@ -106,7 +111,8 @@ RUN export POWERSHELL_TELEMETRY_OPTOUT=1 \
     \$ProgressPreference = 'SilentlyContinue' ; \
     Write-Host "'Install-Module -Name Microsoft Graph **** Takes a long time ****'" ; \
     Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force ;"
-           
+
+# Set USER    
 USER ${USER_NAME}
 
 # Set working directory

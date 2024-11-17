@@ -4,28 +4,48 @@ ARG imageRepo=ubuntu
 
 FROM ${imageRepo}:${fromTag} AS installer-env
 
-ARG USER_ID=1000 
-ARG GROUP_ID=1000
-ARG USER_NAME=user
-ARG MSGRAPH_VERSION=1.9.0
+# Parameters
 ARG CPU=x64
 ARG TZDATA=Europe/Berlin
 
+# Default user and group id
+ARG USER_ID=1000 
+ARG GROUP_ID=1000
+ARG USER_NAME=user
+
+# Parameters msgraph-cli
+# https://learn.microsoft.com/en-us/graph/cli/installation?tabs=linux
 # Download: https://github.com/microsoftgraph/msgraph-cli/releases/download/v1.9.0/msgraph-cli-linux-x64-1.9.0.tar.gz
 # Donwload: https://github.com/microsoftgraph/msgraph-cli/releases/download/v1.9.0/msgraph-cli-linux-arm64-1.9.0.tar.gz
 # Download: https://github.com/microsoftgraph/msgraph-cli/releases/download/v1.9.0/msgraph-cli-linux-arm64-1.9.0.tar.gz
-
-# https://learn.microsoft.com/en-us/graph/cli/installation?tabs=linux
+ARG MSGRAPH_VERSION=1.9.0
 ARG MSGRAPH_PACKAGE=msgraph-cli-linux-${CPU}-${MSGRAPH_VERSION}.tar.gz
 ARG MSGRAPH_PACKAGE_URL=https://github.com/microsoftgraph/msgraph-cli/releases/download/v${MSGRAPH_VERSION}/${MSGRAPH_PACKAGE}
 RUN echo ${MSGRAPH_PACKAGE_URL}
 
+# Set environment variables
 ENV LC_ALL="en_US.UTF-8" \
     LANG="en_US.UTF-8" \
     USER=${USER_NAME} \
     TZ=${TZDATA}
 
+# Create directories
 RUN mkdir -p /opt/microsoft/msgraph
+RUN mkdir -p /home/${USER_NAME}/scripts
+RUN mkdir -p /home/${USER_NAME}/.azure
+RUN mkdir -p /home/${USER_NAME}/Json
+RUN mkdir -p /home/${USER_NAME}/Certificates
+RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}
+RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}/.azure
+RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}/Json
+RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}/Certificates
+
+# Copy files
+COPY .bashrc /home/${USER_NAME}/.bashrc
+COPY .bash_aliases /home/${USER_NAME}/.bash_aliases
+COPY .bash_aliases /home/${USER_NAME}/.bash_history
+COPY install.py /home/${USER_NAME}/scripts/install.py
+COPY install.sh /home/${USER_NAME}/scripts/install.sh
 
 # Install dependencies and clean up
 RUN apt-get update -y \
@@ -50,6 +70,7 @@ RUN apt-get update -y \
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && locale-gen ${LANG} && update-locale
 
+# MS Graph CLI not supported on ARM64 Linux    
 RUN wget -O /tmp/msgraph.tar.gz ${MSGRAPH_PACKAGE_URL} >>dev/null \
     && tar -zxf /tmp/msgraph.tar.gz -C /opt/microsoft/msgraph
 
@@ -58,35 +79,17 @@ RUN wget -O /tmp/msgraph.tar.gz ${MSGRAPH_PACKAGE_URL} >>dev/null \
 RUN  if [ -z $(getent group ${GROUP_ID}) ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
 RUN  if [ -z $(getent passwd ${USER_ID}) ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
 
-
-# Prepare install Azure-Cli in user context 
-RUN mkdir -p /home/${USER_NAME}/scripts
-RUN mkdir -p /home/${USER_NAME}/.azure
-RUN mkdir -p /home/${USER_NAME}/Json
-RUN mkdir -p /home/${USER_NAME}/Certificates
-RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}
-RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}/.azure
-RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}/Json
-RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}/Certificates
-
-COPY .bashrc /home/${USER_NAME}/.bashrc
-COPY .bash_aliases /home/${USER_NAME}/.bash_aliases
-COPY .bash_aliases /home/${USER_NAME}/.bash_history
-COPY install.py /home/${USER_NAME}/scripts/install.py
-COPY install.sh /home/${USER_NAME}/scripts/install.sh
-
 # Install Azure-Cli in user context 
 RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME} \
     && chmod 755 /home/${USER_NAME}/scripts/install.sh \
     && chmod 775 /home/${USER_NAME}/scripts/install.py
-
 USER ${USER_NAME}
-
 RUN /home/${USER_NAME}/scripts/install.sh ${USER_NAME}
 
 # Clean Up
-RUN rm /home/${USER_NAME}/scripts/install.sh
-RUN rm /home/${USER_NAME}/scripts/install.py
+RUN rm -f /home/${USER_NAME}/scripts/install.sh
+RUN rm -f /home/${USER_NAME}/scripts/install.py
+RUN rm -f /tmp/msgraph.tar.gz
 
 # Set working directory
 WORKDIR /home/${USER_NAME}
