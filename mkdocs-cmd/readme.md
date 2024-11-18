@@ -17,10 +17,10 @@ Official Web page MKDOCS can be found [here](https://www.mkdocs.org) .
 
 ```bash
    # amd64:
-   docker run -it --rm --name docfx -p 8080:8000 -v {mkdocs website folder}:/site docker.io/pheese/mkdocs:amd64
+   docker run -it --rm --name docfx -p 8080:8000 -v {mkdocs sample web folder}:/site docker.io/pheese/mkdocs-cmd:amd64
 
    # arm64:
-   docker run -it --rm --name docfx -p 8080:8000 -v {mkdocs website folder}:/site docker.io/pheese/mkdocs:arm64
+   docker run -it --rm --name docfx -p 8080:8000 -v {mkdocs sample web folder}:/site docker.io/pheese/mkdocs-cmd:arm64
 ```
 
 3. Now you can run mkdocs command in the directory /site.
