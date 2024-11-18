@@ -20,7 +20,7 @@ Official Web page DocFX can be found [here](https://dotnet.github.io/docfx/) .
 
 ## Sources Container
 
-- [GitHub Repository DocFX Container files](https://github.com/peterhee/DockerContainer/tree/master/docfx)
+- [GitHub Repository DocFX Container Files](https://github.com/peterhee/DockerContainer/tree/master/docfx-cmd)
 
 ## Generate and run a DocFX website locally in a docker container
 
@@ -30,10 +30,24 @@ Official Web page DocFX can be found [here](https://dotnet.github.io/docfx/) .
 
 ```bash
    # amd64:
-   docker run -it --rm --name docfx -p 8080:80 -v {DocFX website folder}:/source docker.io/pheese/generate-docfx:amd64
+   docker run -it --rm --name docfx -p 8080:80 -v {DocFX website folder}:/source docker.io/pheese/cmd-docfx:amd64
 
    # arm64:
-   docker run -it --rm --name docfx -p 8080:80 -v {DocFX website folder}:/source docker.io/pheese/generate-docfx:arm64
+   docker run -it --rm --name docfx -p 8080:80 -v {DocFX website folder}:/source docker.io/pheese/cmd-docfx:arm64
 ```
 
-3. Go into your browser and access http://localhost:8080
+3. Execute in the container
+
+```bash
+   # Start nginx server
+   nginx
+   sleep 5
+
+   # Compile DocFX Site
+   docfx docfx.json
+
+   # Host web site on port 8080
+   docfx serve /source/_site
+```
+
+4. Go into your browser and access http://localhost:8080

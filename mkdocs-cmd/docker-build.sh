@@ -57,7 +57,7 @@ do
 done
 
 user="pheese"
-name="mkdoc-cmd"
+name="mkdocs-cmd"
 cpu=$(uname -m)
 
 case "$cpu" in
