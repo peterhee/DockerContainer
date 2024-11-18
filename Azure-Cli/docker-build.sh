@@ -63,7 +63,7 @@ do
 done
 
 user="pheese"
-name="azure-pwsh"
+name="azure-cli"
 cpu=$(uname -m)
 
 case "$cpu" in
