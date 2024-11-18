@@ -24,9 +24,11 @@ cpu=$(uname -m)
 
 case "$cpu" in
      "x86_64" ) cpu="x64"
+        tag="amd64"
         IMAGE_REPO=ubuntu
         ;;
      *) cpu="arm64"
+        tag="arm64"
         IMAGE_REPO=arm64v8/ubuntu
         ;;
 esac
@@ -37,5 +39,5 @@ echo CPU Type $cpu
 
 # Build Docker Container
 if [ -f dockerfile ]; then
-    docker build -t docker.io/$user/$name:$cpu --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION -f dockerfile .
+    docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION -f dockerfile .
 fi

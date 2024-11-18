@@ -48,7 +48,7 @@ do
         *)        
         echo "ERROR WRONG PARAMETER: $i"
         echo "*** Command line help ***"
-        echo ' -e or --enable "To run a Docker container as a non-root user"'
+        echo ' -e or --enable "To run a Docker container as currentvuser"'
         echo ' -u="{USER_ID}" or --uid="{USER_ID}"'
         echo ' -n="{USER_NAME}" or --name="{USER_NAME}"'
         echo ' -g="{GROUP_ID}" or --gid="{GROUP_ID}"'
@@ -70,9 +70,11 @@ cpu=$(uname -m)
 # HUGO supports amd64 and arm64 as variables
 case "$cpu" in
      "x86_64") cpu="amd64"
+        tag="amd64"
         IMAGE_REPO=ubuntu
         ;;
      *) cpu="arm64"
+        tag="arm64"
         IMAGE_REPO=arm64v8/ubuntu
         ;;
 esac
@@ -80,7 +82,18 @@ esac
 check_os
 
 echo CPU Type $cpu
+echo Current USER enabled: $userenabled
 
-if [ -f dockerfile ]; then
-    docker build -t docker.io/$user/$name:$cpu --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID --build-arg HUGO_VERSION=$HUGO_VERSION -f dockerfile .
+# Build Docker Container
+if [ $userenabled = 1 ]; then
+    echo USER ID: $USER_ID
+    echo GROUP ID: $GROUP_ID
+    echo USER NAME: $USER_NAME
+    if [ -f dockerfile ]; then
+        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID --build-arg HUGO_VERSION=$HUGO_VERSION -f dockerfile .
+    fi
+else
+    if [ -f dockerfile ]; then
+        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg HUGO_VERSION=$HUGO_VERSION -f dockerfile .
+    fi
 fi

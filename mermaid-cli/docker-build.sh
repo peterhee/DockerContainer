@@ -31,33 +31,22 @@ do
         -e|--enable)
         userenabled=1
         ;;
-        -u=*|--uid=*)
-        USER_ID="${i#*=}"
-        ;;
-        -n=*|--name=*)
-        USER_NAME="${i#*=}"
-        ;;
-        -g=*|--gid=*)
-        GROUP_ID="${i#*=}"
-        ;;
-        *)        
+        *)
         echo "ERROR WRONG PARAMETER: $i"
         echo "*** Command line help ***"
-        echo ' -u="{USER_ID}" or --uid="{USER_ID}"'
-        echo ' -n="{USER_NAME}" or --name="{USER_NAME}"'
-        echo ' -g="{GROUP_ID}" or --gid="{GROUP_ID}"'
+        echo ' -e or --enable "To run a Docker container as a non-root user"'
         echo ' '
         echo 'Default: root user'
         echo ' '${0##*/}
         echo 'Example default: non-root user USER_ID="$USER_ID" GROUP_ID="$GROUP_ID"'
-        echo ' '${0##*/} '-u="1001" -g="1001" -e'
+        echo ' '${0##*/} '-e'
         exit 1
         ;;
     esac
 done
 
 user="pheese"
-name="mkdocs"
+name="mermaid-cli"
 cpu=$(uname -m)
 
 case "$cpu" in
@@ -82,10 +71,10 @@ if [ $userenabled = 1 ]; then
     echo GROUP ID: $GROUP_ID
     echo USER NAME: $USER_NAME
     if [ -f dockerfile ]; then
-        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID -f dockerfile .
+        docker build -t docker.io/$user/$name:$tag --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID -f dockerfile .
     fi
 else
     if [ -f dockerfile ]; then
-        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION -f dockerfile .
+        docker build -t docker.io/$user/$name:$tag --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION -f dockerfile .
     fi
 fi

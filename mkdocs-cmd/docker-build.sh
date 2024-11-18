@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 set -euo pipefail
 IFS=$'\n\t'
 
@@ -28,6 +28,9 @@ userenabled=0
 for i in "$@"
 do
     case $i in
+        -e|--enable)
+        userenabled=1
+        ;;
         -u=*|--uid=*)
         USER_ID="${i#*=}"
         ;;
@@ -54,14 +57,16 @@ do
 done
 
 user="pheese"
-name="mkdocs-cmd"
+name="mkdoc-cmd"
 cpu=$(uname -m)
 
 case "$cpu" in
      "x86_64" ) cpu="x64"
+        tag="amd64"
         IMAGE_REPO=ubuntu
         ;;
      *) cpu="arm64"
+        tag="arm64"
         IMAGE_REPO=arm64v8/ubuntu
         ;;
 esac
@@ -69,8 +74,18 @@ esac
 check_os
 
 echo CPU Type $cpu
+echo Current USER enabled: $userenabled
 
 # Build Docker Container
-if [ -f dockerfile ]; then
-    docker build -t docker.io/$user/$name:$cpu --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID -f dockerfile .
+if [ $userenabled = 1 ]; then
+    echo USER ID: $USER_ID
+    echo GROUP ID: $GROUP_ID
+    echo USER NAME: $USER_NAME
+    if [ -f dockerfile ]; then
+        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID -f dockerfile .
+    fi
+else
+    if [ -f dockerfile ]; then
+        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION -f dockerfile .
+    fi
 fi

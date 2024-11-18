@@ -13,6 +13,11 @@ ARG TZDATA=Europe/Berlin
 ARG CPU=x64
 ARG TAG=${TAG}
 
+# Default user and group id
+ARG USER_ID=1000 
+ARG GROUP_ID=1000
+ARG USER_NAME=user
+
 # Parameters POWERSHELL
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.2.6/powershell-7.2.6-linux-arm64.tar.gz
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.3.6/powershell-7.3.6-linux-x64.tar.gz
@@ -26,29 +31,33 @@ RUN echo "${PS_PACKAGE_URL}"
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     LC_ALL="en_US.UTF-8" \
     LANG="en_US.UTF-8" \
+    USER=${USER_NAME} \      
     TZ=${TZDATA} \
     # set a fixed location for the Module analysis cache
     PSModuleAnalysisCachePath=/var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
     POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-Ubuntu-${TAG}
 
-RUN echo "POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-Ubuntu-${TAG}"
+# Create user and group
+# RUN addgroup --gid ${GROUP_ID} ${USER_NAME}
+RUN  if [ -z $(getent group ${GROUP_ID}) ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
+RUN  if [ -z $(getent passwd ${USER_ID}) ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
 
-# Create Directories
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && mkdir -p /opt/microsoft/powershell/7 \
     && mkdir -p /var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
-    && mkdir -p /root/.config/powershell \
-    && mkdir -p /root/scripts \
-    && mkdir -p /root/Json \
-    && mkdir -p /root/Certificates
+    && mkdir -p /home/${USER_NAME}/.config/powershell \
+    && mkdir -p /home/${USER_NAME}/.local \
+    && mkdir -p /home/${USER_NAME}/scripts \
+    && mkdir -p /home/${USER_NAME}/Json \
+    && mkdir -p /home/${USER_NAME}/Certificates
 
 # Copy files
-COPY install-az.ps1 /root/scripts/.
-COPY update-az.ps1 /root/scripts/.
-COPY login-az.ps1 /root/scripts/.
-COPY .bashrc /root/.bashrc
-COPY .bash_aliases /root/.bash_aliases
-COPY Microsoft.PowerShell_profile.ps1 /root/.config/powershell/Microsoft.PowerShell_profile.ps1
+COPY install-az.ps1 /home/${USER_NAME}/scripts/.
+COPY update-az.ps1 /home/${USER_NAME}/scripts/.
+COPY login-az.ps1 /home/${USER_NAME}/scripts/.
+COPY .bashrc /home/${USER_NAME}/.bashrc
+COPY .bash_aliases /home/${USER_NAME}/.bash_aliases
+COPY Microsoft.PowerShell_profile.ps1 /home/${USER_NAME}/.config/powershell/Microsoft.PowerShell_profile.ps1
 
 # Install dependencies and clean up
 RUN apt-get update -y \
@@ -61,6 +70,7 @@ RUN apt-get update -y \
     gss-ntlmssp \
     openssh-client \
     jq \
+    adduser \
     mono-devel \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG} $ >>/etc/default/locale \
@@ -104,8 +114,14 @@ RUN export POWERSHELL_TELEMETRY_OPTOUT=1 \
     Write-Host "'Install-Module -Name Microsoft Graph **** Takes a long time ****'" ; \
     Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force ;"
 
+# Change Ownership
+RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}
+
+# Switch to user context    
+USER ${USER_NAME}
+
 # Set working directory
-WORKDIR /root
+WORKDIR /home/${USER_NAME}
 
 # Use PowerShell as the default shell
 # Use array to avoid Docker prepending /bin/sh -c 

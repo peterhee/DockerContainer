@@ -16,7 +16,7 @@ check_os() {
 }
 
 user="pheese"
-name="azure-cli"
+name="mermaid-cli"
 cpu=$(uname -m)
 
 case "$cpu" in

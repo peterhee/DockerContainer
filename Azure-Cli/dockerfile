@@ -8,7 +8,6 @@ FROM ${IMAGE}:${TAG} AS installer-env
 
 # Default argument when not provided in the --build-arg
 ARG TZDATA=Europe/Berlin
-
 # INTEL use x64 to get the Powershell installation files
 # ARM use arm64 to get the Powershell installation files
 ARG CPU=x64
@@ -16,6 +15,11 @@ ARG TAG=${TAG}
 
 # Timezone
 ARG TZDATA=Europe/Berlin
+
+# Default user and group id
+ARG USER_ID=1000 
+ARG GROUP_ID=1000
+ARG USER_NAME=user
 
 # Parameters msgraph-cli
 # https://learn.microsoft.com/en-us/graph/cli/installation?tabs=linux
@@ -30,18 +34,22 @@ RUN echo ${MSGRAPH_PACKAGE_URL}
 # Set environment variables
 ENV LC_ALL="en_US.UTF-8" \
     LANG="en_US.UTF-8" \
+    USER=${USER_NAME} \
     TZ=${TZDATA}
 
 # Create directories
-RUN mkdir -p /root/scripts
-RUN mkdir -p /root/.azure
 RUN mkdir -p /opt/microsoft/msgraph
+RUN mkdir -p /home/${USER_NAME}/scripts
+RUN mkdir -p /home/${USER_NAME}/.azure
+RUN mkdir -p /home/${USER_NAME}/Json
+RUN mkdir -p /home/${USER_NAME}/Certificates
 
 # Copy files
-COPY install.py /root/scripts/install.py
-COPY install.sh /root/scripts/install.sh
-COPY .bashrc /root/.bashrc
-COPY .bash_aliases /root/.bash_aliases
+COPY .bashrc /home/${USER_NAME}/.bashrc
+COPY .bash_aliases /home/${USER_NAME}/.bash_aliases
+COPY .bash_aliases /home/${USER_NAME}/.bash_history
+COPY install.py /home/${USER_NAME}/scripts/install.py
+COPY install.sh /home/${USER_NAME}/scripts/install.sh
 
 # Install dependencies and clean up
 RUN apt-get update -y \
@@ -63,12 +71,10 @@ RUN apt-get update -y \
        libsecret-1-0 \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
-    && locale-gen ${LANG} && update-locale \
-    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \    
-    && chmod 755 /root/scripts/install.sh \
-    && /root/scripts/install.sh
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+    && locale-gen ${LANG} && update-locale
 
-# MS Graph CLI not supported on x64 Linux   
+# MS Graph CLI not supported on x64 Linux    
 # Install msgraph-cli only for x64
 RUN if [ "$CPU" = "x64" ]; then \
     wget -O /tmp/msgraph.tar.gz ${MSGRAPH_PACKAGE_URL} >>dev/null \
@@ -77,12 +83,28 @@ RUN if [ "$CPU" = "x64" ]; then \
     && rm -f /tmp/msgraph.tar.gz; \
     fi
 
+# Create user and group
+# RUN addgroup --gid ${GROUP_ID} ${USER_NAME}
+RUN  if [ -z $(getent group ${GROUP_ID}) ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
+RUN  if [ -z $(getent passwd ${USER_ID}) ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
+
+# Install Azure-Cli in user context 
+RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME} \
+    && chmod 755 /home/${USER_NAME}/scripts/install.sh \
+    && chmod 775 /home/${USER_NAME}/scripts/install.py
+
+# Switch to user context
+USER ${USER_NAME}
+
+# Install Azure-Cli
+RUN /home/${USER_NAME}/scripts/install.sh ${USER_NAME}
+
 # Clean Up
-RUN rm -f /root/scripts/install.sh
-RUN rm -f /root/scripts/install.py
+RUN rm -f /home/${USER_NAME}/scripts/install.sh
+RUN rm -f /home/${USER_NAME}/scripts/install.py
 
 # Set working directory
-WORKDIR /root
-
+WORKDIR /home/${USER_NAME}
+    
 # Use Bash command shell
 CMD [ "/bin/bash" ]

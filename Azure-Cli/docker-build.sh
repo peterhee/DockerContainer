@@ -68,9 +68,11 @@ cpu=$(uname -m)
 
 case "$cpu" in
      "x86_64" ) cpu="x64"
+        tag="amd64"
         IMAGE_REPO=ubuntu
         ;;
      *) cpu="arm64"
+        tag="arm64"
         IMAGE_REPO=arm64v8/ubuntu
         ;;
 esac
@@ -78,15 +80,18 @@ esac
 check_os
 
 echo CPU Type $cpu
-echo USER enabled: $userenabled
+echo Current USER enabled: $userenabled
 
 # Build Docker Container
 if [ $userenabled = 1 ]; then
-    if [ -f dockerfile.user ]; then
-        docker build -t docker.io/$user/$name:$cpu --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID --build-arg MSGRAPH_VERSION=$MSGRAPH_VERSION -f dockerfile.user .
+    echo USER ID: $USER_ID
+    echo GROUP ID: $GROUP_ID
+    echo USER NAME: $USER_NAME
+    if [ -f dockerfile ]; then
+        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID --build-arg MSGRAPH_VERSION=$MSGRAPH_VERSION -f dockerfile .
     fi
 else
     if [ -f dockerfile ]; then
-        docker build -t docker.io/$user/$name:$cpu --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg MSGRAPH_VERSION=$MSGRAPH_VERSION -f dockerfile .
+        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg MSGRAPH_VERSION=$MSGRAPH_VERSION -f dockerfile .
     fi
 fi
