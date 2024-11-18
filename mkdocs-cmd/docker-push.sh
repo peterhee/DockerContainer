@@ -29,6 +29,6 @@ check_os
 echo CPU Type $cpu
 
 # Build Docker Container
-if [ -f dockerfile.$cpu ]; then
+if [ -f dockerfile ]; then
     docker push docker.io/$user/$name:$cpu
 fi
