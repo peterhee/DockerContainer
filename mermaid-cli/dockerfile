@@ -72,7 +72,7 @@ RUN ln -s /home/${USER_NAME}/node_modules/.bin/mmdc /usr/bin/mmdc
 USER ${USER}
 WORKDIR /home/${USER_NAME}
 RUN npm install @mermaid-js/mermaid-cli@$VERSION
-
+RUN npx puppeteer browsers install chrome-headless-shell -y
 # Change to the data directory
 WORKDIR /data
 
