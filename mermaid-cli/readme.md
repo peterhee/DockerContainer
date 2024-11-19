@@ -31,21 +31,13 @@ tutorials. Use Mermaid with your favorite applications, check out the list of
 2. Pull the docker container
 
 ```bash
-   # AMD64:
    docker pull docker.io/pheese/mermaid-cli:amd64
-
-   # ARM64:
-   docker pull docker.io/pheese/mermaid-cli:arm64
 ```
 
 3. Run the docker container.
 
 ```bash
-   # AMD64:
    docker run -it --rm --name mermaid-cli -v {Cloned Repo mermaid-cli}/test-positive:/data docker.io/pheese/mermaid-cli:amd64 -i state1.mmd -o state.svg -t transparent
-
-   # ARM64:
-   docker run -it --rm --name mermaid-cli -v {Cloned Repo mermaid-cli}/mermaid-cli/test-positive:/data docker.io/pheese/mermaid-cli:arm64 -i state1.mmd -o state.svg -t transparent
 ```
 
 This generates a file state.svg (Graphic representation) based on the
