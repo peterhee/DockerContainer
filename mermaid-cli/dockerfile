@@ -48,7 +48,8 @@ RUN rm -f /tmp/nodesource_setup.sh
 RUN apt-get update -y \
     && apt-get install -y \
         nodejs \
-        chromium-browser libnss3-dev
+        chromium-browser \
+        libnss3-dev \
     && apt-get install --no-install-recommends -y \
     locales
 
