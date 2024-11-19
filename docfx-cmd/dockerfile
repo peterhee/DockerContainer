@@ -21,9 +21,10 @@ ENV LC_ALL="en_US.UTF-8" \
 # https://github.com/dotnet/docfx/releases
 
 # Install required packages
+# .NET v8.0 SDK is required for DocFX
 RUN apt-get update -y \
     && apt-get upgrade -y \
-    && apt-get install unzip wget nginx git libunwind8 dotnet-sdk-7.0 locales -y \
+    && apt-get install unzip wget nginx git libunwind8 dotnet-sdk-8.0 locales -y \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
