@@ -21,7 +21,9 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     USER=${USER_NAME} \
     USER_ID=${USER_ID} \
     GROUP_ID=${GROUP_ID} \
-    TZ=${TZDATA}
+    TZ=${TZDATA} \
+    CHROME_BIN="/usr/bin/chromium-browser" \
+    PUPPETEER_SKIP_DOWNLOAD="true" 
     # set a fixed location for the Module analysis cache
 
 # Set the timezone
@@ -46,7 +48,7 @@ RUN rm -f /tmp/nodesource_setup.sh
 RUN apt-get update -y \
     && apt-get install -y \
         nodejs \
-        chromium-bsu\
+        chromium-browser\
     && apt-get install --no-install-recommends -y \
     locales
 
