@@ -13,6 +13,7 @@ ARG TZDATA=Europe/Berlin
 # ARM use arm64 to get the Powershell installation files
 ARG CPU=x64
 ARG TAG=${TAG}
+ARG UBUNTU_CODENAME=focal
 
 # Timezone
 ARG TZDATA=Europe/Berlin
@@ -76,6 +77,11 @@ RUN if [ "$CPU" = "x64" ]; then \
     && ln -s /opt/microsoft/msgraph/mgc /usr/local/bin/mgc \
     && rm -f /tmp/msgraph.tar.gz; \
     fi
+# Install Terraform
+RUN wget -O - https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com ${UBUNTU_CODENAME} main" | tee /etc/apt/sources.list.d/hashicorp.list \
+    && apt update -y \
+    && apt install terraform -y
 
 # Clean Up
 RUN rm -f /root/scripts/install.sh

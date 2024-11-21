@@ -12,6 +12,7 @@ ARG TZDATA=Europe/Berlin
 # ARM use arm64 to get the Powershell installation files
 ARG CPU=x64
 ARG TAG=${TAG}
+ARG UBUNTU_CODENAME=focal
 
 # Default user and group id
 ARG USER_ID=1000 
@@ -113,6 +114,12 @@ RUN export POWERSHELL_TELEMETRY_OPTOUT=1 \
     \$ProgressPreference = 'SilentlyContinue' ; \
     Write-Host "'Install-Module -Name Microsoft Graph **** Takes a long time ****'" ; \
     Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force ;"
+
+# Install Terraform
+RUN wget -O - https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com ${UBUNTU_CODENAME} main" | tee /etc/apt/sources.list.d/hashicorp.list \
+    && apt update -y \
+    && apt install terraform -y
 
 # Change Ownership
 RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}
