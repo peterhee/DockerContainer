@@ -63,6 +63,7 @@ RUN apt-get update -y \
     openssh-client \
     jq \
     mono-devel \
+    gnupg \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG} $ >>/etc/default/locale \
     && locale-gen $LANG && update-locale
