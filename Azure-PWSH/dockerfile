@@ -75,7 +75,7 @@ RUN apt-get update -y \
 
 RUN apt-get install -y dotnet-sdk-8.0
 
-# Remove default user and group if exists
+# Remove default user and group if exists (Ubuntu 24.04 Default User)
 RUN if [[ -n $(getent passwd 1000) ]]; then userdel -r $(id -nu 1000); fi
 
 # Create user and group
