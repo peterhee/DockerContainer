@@ -2,7 +2,7 @@
 # INTEL use Image Repo ubuntu
 # ARM64 use Image Repo arm64v8/ubuntu
 ARG IMAGE=ubuntu
-ARG TAG=22.04
+ARG TAG=24.04
 
 FROM ${IMAGE}:${TAG} AS installer-env
 
@@ -55,14 +55,14 @@ RUN echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
     && locale-gen $LANG && update-locale
 
-# Remove default user and group if exists
-RUN if [ -n $(getent passwd 1000) ]; then userdel -r $(id -nu 1000); fi
+# Remove default user and group if exists (Ubuntu 24.04 Default User)
+RUN export entry=$(getent passwd 1000) && if [ -n "$entry" ]; then userdel -r $(id -nu 1000); fi
 
 # Create user and group
-# RUN addgroup --gid ${GROUP_ID} ${USER_NAME}
-RUN if [ -z $(getent group ${GROUP_ID}) ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
-# RUN adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}
-RUN if [ -z $(getent passwd ${USER_ID}) ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
+# RUN addgroup --gid ${GROUP_ID} ${USER_NAME} if exists rename group
+RUN  if [ -z "$(getent group ${GROUP_ID})" ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
+# RUN adduser ${GROUP_ID} ${USER_NAME} if exists rename user and change home directory 
+RUN  if [ -z "$(getent passwd ${USER_ID})" ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
 
 # Set permissions
 RUN chown -R ${USER_ID}:${GROUP_ID} /site
