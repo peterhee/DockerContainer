@@ -20,8 +20,8 @@ check_os() {
 USER_ID=$(id -u)
 GROUP_ID=$(id -g)
 USER_NAME=$USER
-PS_VERSION="7.4.3"
-UBUNTU_VERSION="22.04"
+PS_VERSION="7.5.0"
+UBUNTU_VERSION="24.04"
 
 userenabled=0
 # parse commandline

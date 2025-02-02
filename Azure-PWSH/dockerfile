@@ -22,7 +22,7 @@ ARG USER_NAME=user
 # Parameters POWERSHELL
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.2.6/powershell-7.2.6-linux-arm64.tar.gz
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.3.6/powershell-7.3.6-linux-x64.tar.gz
-ARG PS_VERSION=7.4.5
+ARG PS_VERSION=7.5.0
 ARG PS_PACKAGE=powershell-${PS_VERSION}-linux-${CPU}.tar.gz
 ARG PS_PACKAGE_URL=https://github.com/PowerShell/PowerShell/releases/download/v${PS_VERSION}/${PS_PACKAGE}
 RUN echo "${PS_PACKAGE}"
@@ -37,11 +37,6 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     # set a fixed location for the Module analysis cache
     PSModuleAnalysisCachePath=/var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache \
     POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-Ubuntu-${TAG}
-
-# Create user and group
-# RUN addgroup --gid ${GROUP_ID} ${USER_NAME}
-RUN  if [ -z $(getent group ${GROUP_ID}) ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
-RUN  if [ -z $(getent passwd ${USER_ID}) ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && mkdir -p /opt/microsoft/powershell/7 \
@@ -72,11 +67,21 @@ RUN apt-get update -y \
     openssh-client \
     jq \
     adduser \
-    mono-devel \
+    # mono-devel \
     gnupg \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG} $ >>/etc/default/locale \
     && locale-gen $LANG && update-locale
+
+RUN apt-get install -y dotnet-sdk-8.0
+
+# Remove default user and group if exists
+RUN if [[ -n $(getent passwd 1000) ]]; then userdel -r $(id -nu 1000); fi
+
+# Create user and group
+# RUN addgroup --gid ${GROUP_ID} ${USER_NAME}
+RUN  if [[ -z $(getent group ${GROUP_ID}) ]]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
+RUN  if [[ -z $(getent passwd ${USER_ID}) ]]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
 
 # Install PowerShell from Microsoft APT Repo
 RUN wget -O /tmp/powershell.tar.gz ${PS_PACKAGE_URL} >>/dev/null \
@@ -98,16 +103,18 @@ RUN export POWERSHELL_TELEMETRY_OPTOUT=1 \
     while(!(Test-Path -Path \$env:PSModuleAnalysisCachePath)) {  \
         Write-Host "'Waiting for $env:PSModuleAnalysisCachePath'" ; \
         Start-Sleep -Seconds 6 ; \
-    }" \
-    && pwsh \
+    }"
+
+RUN pwsh \
     -NoLogo \
     -NoProfile \
     -Command " \
     \$ErrorActionPreference = 'Stop' ; \
     \$ProgressPreference = 'SilentlyContinue' ; \
     Write-Host "'Install-Module -Name AZ **** Takes a long time ****'" ; \
-    Install-Module -Name Az -AllowClobber -Scope AllUsers -Force ;" \
-    && pwsh \
+    Install-Module -Name Az -AllowClobber -Scope AllUsers -Force ;"
+
+RUN pwsh \
     -NoLogo \
     -NoProfile \
     -Command " \
