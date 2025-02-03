@@ -69,7 +69,7 @@ RUN wget -O /tmp/hugo.deb ${HUGO_PACKAGE_URL} >>/dev/null \
     rm -f /tmp/hugo.deb
 
 # Remove default user and group if exists (Ubuntu 24.04 Default User)
-RUN export entry="$(getent passwd 1000)" && if [ -n "$entry" ]; then userdel -r $(id -nu 1000); fi
+RUN if [ -n "$(getent passwd 1000)" ]; then userdel -r $(id -nu 1000); fi
 
 # Create user and group
 # RUN addgroup --gid ${GROUP_ID} ${USER_NAME} if exists rename group
