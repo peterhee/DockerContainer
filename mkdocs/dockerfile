@@ -89,8 +89,7 @@ RUN chmod 755 /scripts/entrypoint.sh
 USER ${USER}
 
 # Install mkdocs and extensions
-RUN if [ "22.04" = "${UBUNTU_VERSIONl
-}" ]; then pip3 install mkdocs \
+RUN if [ "22.04" = "${UBUNTU_VERSION}" ]; then pip3 install mkdocs \
     && pip3 install markdown_extensions \
     && pip3 install pymdown-extensions \
     && pip3 install mkdocs-material \
