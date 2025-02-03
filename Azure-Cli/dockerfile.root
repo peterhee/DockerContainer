@@ -13,7 +13,6 @@ ARG TZDATA=Europe/Berlin
 # ARM use arm64 to get the Powershell installation files
 ARG CPU=x64
 ARG TAG=${TAG}
-ARG UBUNTU_CODENAME=focal
 
 # Timezone
 ARG TZDATA=Europe/Berlin

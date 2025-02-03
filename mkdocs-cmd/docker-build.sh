@@ -20,7 +20,7 @@ check_os() {
 USER_ID=$(id -u)
 GROUP_ID=$(id -g)
 USER_NAME=$USER
-UBUNTU_VERSION="22.04"
+UBUNTU_VERSION="24.04"
 
 userenabled=0
 # parse commandline
@@ -39,6 +39,9 @@ do
         ;;
         -g=*|--gid=*)
         GROUP_ID="${i#*=}"
+        ;;
+        -v=*|--ubuntu-version=*)
+        UBUNTU_VERSION="${i#*=}"
         ;;
         *)        
         echo "ERROR WRONG PARAMETER: $i"
@@ -82,10 +85,10 @@ if [ $userenabled = 1 ]; then
     echo GROUP ID: $GROUP_ID
     echo USER NAME: $USER_NAME
     if [ -f dockerfile ]; then
-        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID -f dockerfile .
+        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg UBUNTU_VERSION=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID -f dockerfile .
     fi
 else
     if [ -f dockerfile ]; then
-        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION -f dockerfile .
+        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION  --build-arg UBUNTU_VERSION=$UBUNTU_VERSION -f dockerfile .
     fi
 fi

@@ -1,12 +1,14 @@
 #!/bin/sh
 
+export PATH=$PATH:/home/$USER/.local/bin
+
 # MKDOCS 
-chown ${USER_ID}:${GROUP_ID} /site
+# chown ${USER_ID}:${GROUP_ID} /site
 
 # Build Site
-/home/$USER/.local/bin/mkdocs build
+mkdocs build
 
 # Run web server
-/home/$USER/.local/bin/mkdocs serve --dev-addr 0.0.0.0:8000
+mkdocs serve --dev-addr 0.0.0.0:8000
 
 

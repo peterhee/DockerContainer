@@ -2,9 +2,10 @@
 # INTEL use Image Repo ubuntu
 # ARM64 use Image Repo arm64v8/ubuntu
 ARG IMAGE=ubuntu
-ARG TAG=22.04
+ARG TAG=24.04
 
 FROM ${IMAGE}:${TAG} AS installer-env
+ARG UBUNTU_VERSION=24.04
 
 # Timezone
 ARG TZDATA=Europe/Berlin
@@ -21,7 +22,8 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     USER=${USER_NAME} \
     TZ=${TZDATA} \
     GROUP_ID=${GROUP_ID} \
-    USER_ID=${USER_ID}
+    USER_ID=${USER_ID} \
+    UBUNTU_VERSION=${UBUNTU_VERSION}
     # set a fixed location for the Module analysis cache
 
 # Set the timezone
@@ -55,6 +57,19 @@ RUN echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
     && locale-gen $LANG && update-locale
 
+RUN if [ "22.04" != "${UBUNTU_VERSION}" ]; then apt-get install -y mkdocs \
+    mkdocs-material \
+    mkdocs-material-extensions \
+    mkdocs-redirects \
+    mkdocs-autorefs \
+    mkdocs-literate-nav \
+    mkdocstrings \
+    mkdocs-click; fi
+#       mkdocs-pymdown-extensions \
+#       mkdocs-pdf-export-plugin \
+#       mkdocs-minify-plugin \
+#       mkdocs-git-revision-date-plugin
+
 # Remove default user and group if exists (Ubuntu 24.04 Default User)
 RUN if [ -n "$(getent passwd 1000)" ]; then userdel -r $(id -nu 1000); fi
 
@@ -74,7 +89,7 @@ RUN chmod 755 /scripts/entrypoint.sh
 USER ${USER}
 
 # Install mkdocs and extensions
-RUN pip3 install mkdocs \
+RUN if [ "22.04" = "${UBUNTU_VERSION}" ]; then pip3 install mkdocs \
     && pip3 install markdown_extensions \
     && pip3 install pymdown-extensions \
     && pip3 install mkdocs-material \
@@ -85,7 +100,7 @@ RUN pip3 install mkdocs \
     && pip3 install mkdocs-autorefs \
     && pip3 install mkdocs-literate-nav \
     && pip3 install 'mkdocstrings[crystal,python]' \
-    && pip3 install mkdocs-click
+    && pip3 install mkdocs-click; fi
 
 # Expose the port
 EXPOSE 8000

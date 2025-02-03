@@ -17,10 +17,10 @@ Official Web page MKDOCS can be found [here](https://www.mkdocs.org) .
 
 ```bash
    # amd64:
-   docker run -it --rm --name docfx -p 8080:8000 -v {mkdocs sample web folder}:/site docker.io/pheese/mkdocs-cmd:amd64
+   docker run -it --rm --name mkdocs-cmd -p 8080:8000 -v {mkdocs sample web folder}:/site docker.io/pheese/mkdocs-cmd:amd64
 
    # arm64:
-   docker run -it --rm --name docfx -p 8080:8000 -v {mkdocs sample web folder}:/site docker.io/pheese/mkdocs-cmd:arm64
+   docker run -it --rm --name mkdocs-cmd -p 8080:8000 -v {mkdocs sample web folder}:/site docker.io/pheese/mkdocs-cmd:arm64
 ```
 
 3. Now you can run mkdocs command in the directory /site.
@@ -39,3 +39,5 @@ mkdocs serve --dev-addr 0.0.0.0:8000
 #  /script/entrypoint.sh builds site and starts web server (Also fixes permission issue running the first time)
 /script/entrypoint.sh
 ```
+
+4. Go into your browser and access http://localhost:8080

@@ -12,7 +12,6 @@ ARG TZDATA=Europe/Berlin
 # ARM use arm64 to get the Powershell installation files
 ARG CPU=x64
 ARG TAG=${TAG}
-ARG UBUNTU_CODENAME=focal
 
 # Default user and group id
 ARG USER_ID=1000 
@@ -104,25 +103,23 @@ RUN export POWERSHELL_TELEMETRY_OPTOUT=1 \
     while(!(Test-Path -Path \$env:PSModuleAnalysisCachePath)) {  \
         Write-Host "'Waiting for $env:PSModuleAnalysisCachePath'" ; \
         Start-Sleep -Seconds 6 ; \
-    }"
-
-RUN pwsh \
-    -NoLogo \
-    -NoProfile \
-    -Command " \
-    \$ErrorActionPreference = 'Stop' ; \
-    \$ProgressPreference = 'SilentlyContinue' ; \
-    Write-Host "'Install-Module -Name AZ **** Takes a long time ****'" ; \
-    Install-Module -Name Az -AllowClobber -Scope AllUsers -Force ;"
-
-RUN pwsh \
-    -NoLogo \
-    -NoProfile \
-    -Command " \
-    \$ErrorActionPreference = 'Stop' ; \
-    \$ProgressPreference = 'SilentlyContinue' ; \
-    Write-Host "'Install-Module -Name Microsoft Graph **** Takes a long time ****'" ; \
-    Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force ;"
+    }" \
+    && pwsh \
+        -NoLogo \
+        -NoProfile \
+        -Command " \
+        \$ErrorActionPreference = 'Stop' ; \
+        \$ProgressPreference = 'SilentlyContinue' ; \
+        Write-Host "'Install-Module -Name AZ **** Takes a long time ****'" ; \
+        Install-Module -Name Az -AllowClobber -Scope AllUsers -Force ;" \
+    && pwsh \
+        -NoLogo \
+        -NoProfile \
+        -Command " \
+        \$ErrorActionPreference = 'Stop' ; \
+        \$ProgressPreference = 'SilentlyContinue' ; \
+        Write-Host "'Install-Module -Name Microsoft Graph **** Takes a long time ****'" ; \
+        Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force ;"
 
 # Install Terraform
 RUN wget -O - https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
