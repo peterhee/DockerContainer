@@ -57,7 +57,7 @@ RUN echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
     && locale-gen $LANG && update-locale
 
-RUN if [ "24.04" -ge "${UBUNTU_VERSION}" ]; then apt-get install -y mkdocs \
+RUN if [ "22.04" != "${UBUNTU_VERSION}" ]; then apt-get install -y mkdocs \
     mkdocs-material \
     mkdocs-material-extensions \
     mkdocs-redirects \
@@ -89,7 +89,7 @@ RUN chmod 755 /scripts/entrypoint.sh
 USER ${USER}
 
 # Install mkdocs and extensions
-RUN if [ "22.04" -ge "${UBUNTU_VERSION}" ]; then pip3 install mkdocs \
+RUN if [ "22.04" == "${UBUNTU_VERSION}" ]; then pip3 install mkdocs \
     && pip3 install markdown_extensions \
     && pip3 install pymdown-extensions \
     && pip3 install mkdocs-material \
