@@ -12,6 +12,7 @@ ARG TZDATA=Europe/Berlin
 # ARM use arm64 to get the Powershell installation files
 ARG CPU=x64
 ARG TAG=${TAG}
+ARG UBUNTU_CODENAME=noble
 
 # Default user and group id
 ARG USER_ID=1000 
@@ -59,20 +60,18 @@ RUN apt-get update -y \
     && apt-get upgrade -y \
     && apt-get install -y wget \
     && apt-get install --no-install-recommends -y \
-    less \
+    wget apt-transport-https software-properties-common \
     locales \
-    ca-certificates \
-    gss-ntlmssp \
-    openssh-client \
     jq \
     adduser \
-    # mono-devel \
-    gnupg \
+    # dotnet-sdk-8.0 \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG} $ >>/etc/default/locale \
-    && locale-gen $LANG && update-locale
-
-RUN apt-get install -y dotnet-sdk-8.0
+    && locale-gen $LANG && update-locale \
+    && apt-get clean -y \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /var/cache/apt/archives/*.deb    
 
 # Remove default user and group if exists (Ubuntu 24.04 Default User)
 RUN if [ -n "$(getent passwd 1000)" ]; then userdel -r $(id -nu 1000); fi
