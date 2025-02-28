@@ -26,13 +26,10 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     UBUNTU_VERSION=${UBUNTU_VERSION}
     # set a fixed location for the Module analysis cache
 
-# Set the timezone
-RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
-
 # Create directories 
-RUN mkdir /site
-RUN mkdir -p /scripts
-RUN mkdir -p /home/${USER_NAME}
+RUN mkdir /site \
+    && mkdir -p /scripts \
+    && mkdir -p /home/${USER_NAME}
 
 # Configure the tools and scripts
 COPY .bashrc /home/${USER_NAME}/.bashrc
@@ -43,47 +40,51 @@ COPY entrypoint.sh /scripts
 # Install dependencies and clean up
 RUN apt-get update -y \
     && apt-get upgrade -y \
-    && apt-get install -y wget \
+    && apt-get install --no-install-recommends -y wget \
+    adduser \
     locales \
     ca-certificates \
     git \
     python3 \
     python3-pip \
     weasyprint \
-    && apt-get install --no-install-recommends -y
-
-# Configure the locale
-RUN echo ${LC_ALL} >>/etc/default/locale \
+    # Configure the locale
+    && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
-    && locale-gen $LANG && update-locale
-
-RUN if [ "22.04" != "${UBUNTU_VERSION}" ]; then apt-get install -y mkdocs \
+    && locale-gen $LANG && update-locale \
+    # Set the timezone
+    && ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone \
+    && if [ "22.04" != "${UBUNTU_VERSION}" ]; then apt-get install -y mkdocs \
         mkdocs-material \
         mkdocs-material-extensions \
         mkdocs-redirects \
         mkdocs-autorefs \
         mkdocs-literate-nav \
         mkdocstrings \
-        mkdocs-click; fi
-#       mkdocs-pymdown-extensions \
-#       mkdocs-pdf-export-plugin \
-#       mkdocs-minify-plugin \
-#       mkdocs-git-revision-date-plugin
+        mkdocs-click; fi \
+        # mkdocs-pymdown-extensions \
+        # mkdocs-pdf-export-plugin \
+        # mkdocs-minify-plugin \
+        # mkdocs-git-revision-date-plugin
+    # Clean up
+    && apt-get clean -y \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /var/cache/apt/archives/*.deb  
 
-# Remove default user and group if exists (Ubuntu 24.04 Default User)
-RUN if [ -n "$(getent passwd 1000)" ]; then userdel -r $(id -nu 1000); fi
-
-# Create user and group
-# RUN addgroup --gid ${GROUP_ID} ${USER_NAME} if exists rename group
-RUN  if [ -z "$(getent group ${GROUP_ID})" ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
-# RUN adduser ${GROUP_ID} ${USER_NAME} if exists rename user and change home directory 
-RUN  if [ -z "$(getent passwd ${USER_ID})" ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
+    # Remove default user and group if exists (Ubuntu 24.04 Default User)
+RUN if [ -n "$(getent passwd 1000)" ]; then userdel -r $(id -nu 1000); fi \
+    # Create user and group
+    # RUN addgroup --gid ${GROUP_ID} ${USER_NAME} if exists rename group
+    && if [ -z "$(getent group ${GROUP_ID})" ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi \
+    # RUN adduser ${GROUP_ID} ${USER_NAME} if exists rename user and change home directory 
+    &&  if [ -z "$(getent passwd ${USER_ID})" ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
 
 # Set permissions
-RUN chown -R ${USER_ID}:${GROUP_ID} /site
-RUN chown -R ${USER_ID}:${GROUP_ID} /scripts
-RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}
-RUN chmod 755 /scripts/entrypoint.sh
+RUN chown -R ${USER_ID}:${GROUP_ID} /site \
+    && chown -R ${USER_ID}:${GROUP_ID} /scripts \
+    && chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME} \
+    && chmod 755 /scripts/entrypoint.sh
 
 # Switch to the user
 USER ${USER}

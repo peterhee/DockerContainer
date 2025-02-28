@@ -85,11 +85,11 @@ RUN apt-get update -y \
 
 # Remove default user and group if exists (Ubuntu 24.04 Default User)
 RUN if [ -n "$(getent passwd 1000)" ]; then userdel -r $(id -nu 1000); fi \
-# Create user and group
-# RUN addgroup --gid ${GROUP_ID} ${USER_NAME} if exists rename group
-&&  if [ -z "$(getent group ${GROUP_ID})" ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi \
-# RUN adduser ${GROUP_ID} ${USER_NAME} if exists rename user and change home directory 
-&&  if [ -z "$(getent passwd ${USER_ID})" ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
+    # Create user and group
+    # RUN addgroup --gid ${GROUP_ID} ${USER_NAME} if exists rename group
+    &&  if [ -z "$(getent group ${GROUP_ID})" ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi \
+    # RUN adduser ${GROUP_ID} ${USER_NAME} if exists rename user and change home directory 
+    &&  if [ -z "$(getent passwd ${USER_ID})" ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
 
 # Install Azure-Cli in user context 
 RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME} \

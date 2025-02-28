@@ -27,12 +27,17 @@ RUN apt-get update -y \
     && apt-get install unzip wget nginx git libunwind8 dotnet-sdk-8.0 locales -y \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
-    && locale-gen ${LANG} && update-locale
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+    && locale-gen ${LANG} && update-locale \
+    # Clean up
+    && apt-get clean -y \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /var/cache/apt/archives/*.deb  
 
 # Create source directory
-RUN mkdir -p /source
-RUN mkdir -p /scripts
+RUN mkdir -p /source \
+    && mkdir -p /scripts
 
 # Configure the tools and scripts
 COPY entrypoint.sh /scripts

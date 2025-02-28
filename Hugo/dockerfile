@@ -2,7 +2,7 @@
 # INTEL use Image Repo ubuntu
 # ARM64 use Image Repo arm64v8/ubuntu
 ARG IMAGE=ubuntu
-ARG TAG=22.04
+ARG TAG=24.04
 
 FROM ${IMAGE}:${TAG} AS installer-env
 
@@ -39,48 +39,50 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Create directories
-RUN mkdir /site
-RUN mkdir -p /scripts
-RUN mkdir -p /home/${USER_NAME}
+RUN mkdir /site \
+    && mkdir -p /scripts \
+    && mkdir -p /home/${USER_NAME}
 
 # Configure the tools and scripts
 COPY entrypoint.sh /scripts
-RUN chmod 755 /scripts/entrypoint.sh
 
 # Install dependencies and clean up
 RUN apt-get update -y \
     && apt-get upgrade -y \
-    && apt-get install -y wget \
+    && apt-get install --no-install-recommends -y wget \
+    adduser \
     ca-certificates \
     git \
     golang-go \
-    && apt-get install --no-install-recommends -y \
-    locales
-
-# Configure the locale
-RUN echo 'LC_ALL="en_US.UTF-8"' >>/etc/default/locale \
+    locales \
+    # Configure the locale
+    && echo 'LC_ALL="en_US.UTF-8"' >>/etc/default/locale \
     && echo 'LANG="en_US.UTF-8"'  >>/etc/default/locale \
-    && locale-gen $LANG && update-locale
-
-# Install Hugo
-RUN wget -O /tmp/hugo.deb ${HUGO_PACKAGE_URL} >>/dev/null \
+    && locale-gen $LANG && update-locale \
+    # Install Hugo
+    && wget -O /tmp/hugo.deb ${HUGO_PACKAGE_URL} >>/dev/null \
     && dpkg -i /tmp/hugo.deb \
     && locale-gen $LANG && update-locale \
-    rm -f /tmp/hugo.deb
+    rm -f /tmp/hugo.deb \
+    # Clean Up
+    && apt-get clean -y \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /var/cache/apt/archives/*.deb
 
 # Remove default user and group if exists (Ubuntu 24.04 Default User)
-RUN if [ -n "$(getent passwd 1000)" ]; then userdel -r $(id -nu 1000); fi
-
-# Create user and group
-# RUN addgroup --gid ${GROUP_ID} ${USER_NAME} if exists rename group
-RUN  if [ -z "$(getent group ${GROUP_ID})" ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi
-# RUN adduser ${GROUP_ID} ${USER_NAME} if exists rename user and change home directory 
-RUN  if [ -z "$(getent passwd ${USER_ID})" ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
+RUN if [ -n "$(getent passwd 1000)" ]; then userdel -r $(id -nu 1000); fi \
+    # Create user and group
+    # RUN addgroup --gid ${GROUP_ID} ${USER_NAME} if exists rename group
+    && if [ -z "$(getent group ${GROUP_ID})" ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi \
+    # RUN adduser ${GROUP_ID} ${USER_NAME} if exists rename user and change home directory 
+    &&  if [ -z "$(getent passwd ${USER_ID})" ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
 
 # Set permissions
-RUN chown -R ${USER_ID}:${GROUP_ID} /site
-RUN chown -R ${USER_ID}:${GROUP_ID} /scripts
-RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME}
+RUN chown -R ${USER_ID}:${GROUP_ID} /site \
+    && chown -R ${USER_ID}:${GROUP_ID} /scripts \
+    && chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME} \
+    && chmod 755 /scripts/entrypoint.sh
 
 # Switch to the user
 USER ${USER}

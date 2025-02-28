@@ -22,7 +22,7 @@ GROUP_ID=$(id -g)
 USER_NAME=$USER
 
 HUGO_VERSION="0.125.1"
-UBUNTU_VERSION="22.04"
+UBUNTU_VERSION="24.04"
 
 userenabled=0
 # parse commandline
