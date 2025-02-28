@@ -65,13 +65,11 @@ RUN apt-get update -y \
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && locale-gen ${LANG} && update-locale
 
-RUN apt-get install -y gnome-keyring libsecret-1-0
-
 # MS Graph CLI not supported on x64 Linux    
 # Install msgraph-cli only for x64
 RUN if [ "$CPU" = "x64" ]; then \
     apt-get install -y gnome-keyring libsecret-1-0 \
-    wget -O /tmp/msgraph.tar.gz ${MSGRAPH_PACKAGE_URL} >>dev/null \
+    && wget -O /tmp/msgraph.tar.gz ${MSGRAPH_PACKAGE_URL} >>dev/null \
     && tar -zxf /tmp/msgraph.tar.gz -C /opt/microsoft/msgraph \
     && ln -s /opt/microsoft/msgraph/mgc /usr/local/bin/mgc \
     && rm -f /tmp/msgraph.tar.gz; \
