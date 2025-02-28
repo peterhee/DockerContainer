@@ -39,11 +39,11 @@ ENV LC_ALL="en_US.UTF-8" \
     TZ=${TZDATA}
 
 # Create directories
-RUN mkdir -p /opt/microsoft/msgraph
-RUN mkdir -p /home/${USER_NAME}/scripts
-RUN mkdir -p /home/${USER_NAME}/.azure
-RUN mkdir -p /home/${USER_NAME}/Json
-RUN mkdir -p /home/${USER_NAME}/Certificates
+RUN mkdir -p /opt/microsoft/msgraph \
+    && mkdir -p /home/${USER_NAME}/scripts \
+    && mkdir -p /home/${USER_NAME}/.azure \
+    && mkdir -p /home/${USER_NAME}/Json \
+    && mkdir -p /home/${USER_NAME}/Certificates
 
 # Copy files
 COPY .bashrc /home/${USER_NAME}/.bashrc
@@ -89,10 +89,9 @@ RUN if [ -n "$(getent passwd 1000)" ]; then userdel -r $(id -nu 1000); fi \
     # RUN addgroup --gid ${GROUP_ID} ${USER_NAME} if exists rename group
     &&  if [ -z "$(getent group ${GROUP_ID})" ]; then addgroup --gid ${GROUP_ID} ${USER_NAME}; fi \
     # RUN adduser ${GROUP_ID} ${USER_NAME} if exists rename user and change home directory 
-    &&  if [ -z "$(getent passwd ${USER_ID})" ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi
-
-# Install Azure-Cli in user context 
-RUN chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME} \
+    &&  if [ -z "$(getent passwd ${USER_ID})" ]; then adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}; fi \
+    # Install Azure-Cli in user context 
+    && chown -R ${USER_ID}:${GROUP_ID} /home/${USER_NAME} \
     && chmod 755 /home/${USER_NAME}/scripts/install.sh
 
 # Install Azure-Cli
