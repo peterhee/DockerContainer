@@ -55,11 +55,11 @@ COPY install.sh /home/${USER_NAME}/scripts/install.sh
 RUN apt-get update -y \
     && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
-        apt-transport-https ca-certificates curl gnupg lsb-release \
-        curl \
-        jq \
-        wget \
-        locales \
+       apt-transport-https ca-certificates curl gnupg lsb-release \
+       curl \
+       jq \
+       wget \
+       locales \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
