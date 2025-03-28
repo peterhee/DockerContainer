@@ -88,10 +88,16 @@ if [ $userenabled = 1 ]; then
     echo GROUP ID: $GROUP_ID
     echo USER NAME: $USER_NAME
     if [ -f dockerfile ]; then
-        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME --build-arg GROUP_ID=$GROUP_ID --build-arg MSGRAPH_VERSION=$MSGRAPH_VERSION -f dockerfile .
+        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu \
+            --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION \
+            --build-arg USER_ID=$USER_ID --build-arg USER_NAME=$USER_NAME \
+            --build-arg GROUP_ID=$GROUP_ID --build-arg MSGRAPH_VERSION=$MSGRAPH_VERSION \
+            --no-cache -f dockerfile .
     fi
 else
     if [ -f dockerfile ]; then
-        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION --build-arg MSGRAPH_VERSION=$MSGRAPH_VERSION -f dockerfile .
+        docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu \
+            --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION \
+            --build-arg MSGRAPH_VERSION=$MSGRAPH_VERSION -f dockerfile .
     fi
 fi
