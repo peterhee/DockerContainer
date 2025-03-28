@@ -98,6 +98,7 @@ else
     if [ -f dockerfile ]; then
         docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu \
             --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION \
-            --build-arg MSGRAPH_VERSION=$MSGRAPH_VERSION -f dockerfile .
+            --build-arg MSGRAPH_VERSION=$MSGRAPH_VERSION \
+            -f dockerfile .
     fi
 fi
