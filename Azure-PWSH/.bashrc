@@ -108,4 +108,4 @@ fi
 #    . /etc/bash_completion
 #fi
 
-export PATH=$PATH:/root/bin
+# export PATH=$PATH:/root/bin

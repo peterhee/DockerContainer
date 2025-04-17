@@ -104,6 +104,15 @@ RUN apt-get update -y \
             \$ProgressPreference = 'SilentlyContinue' ; \
             Write-Host "'Install-Module -Name Microsoft Graph **** Takes a long time ****'" ; \
             Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force ;" \
+        # https://www.powershellgallery.com/packages/Bicep/2.8.0
+        && pwsh \
+            -NoLogo \
+            -NoProfile \
+            -Command " \
+            \$ErrorActionPreference = 'Stop' ; \
+            \$ProgressPreference = 'SilentlyContinue' ; \
+            Write-Host "'Install-Module -Name Bicep **** Takes a long time ****'" ; \
+            Install-Module Bicep -Scope AllUsers -Repository PSGallery -Force ;" \
     # Install Terraform
     && wget -O - https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
         && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com ${UBUNTU_CODENAME} main" | tee /etc/apt/sources.list.d/hashicorp.list \
