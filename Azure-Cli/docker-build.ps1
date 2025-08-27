@@ -5,7 +5,6 @@ $cpu = "arm64"
 $USER_ID = "1000"
 $GROUP_ID = "1000"
 $USER_NAME = "user"
-$PS_VERSION="7.4.3"
 $UBUNTU_VERSION = "24.04"
 $MSGRAPH_VERSION = "1.9.0"
 
@@ -16,11 +15,13 @@ write-host $osarchitecture
 if ($osarchitecture.StartsWith("ARM"))
 {
 	$cpu = "arm64"
+	$cputag = "arm64"
 	$IMAGE_REPO ="arm64v8/ubuntu"
 }
 else
 {
-	$cpu ="x64"
+	$cpu = "x64"
+	$cputag = "amd64"
 	$IMAGE_REPO = "ubuntu"
 }
 
@@ -67,7 +68,7 @@ for ($i = 0; $i -le $Args.count; $i++ ) {
 		}
 	}
 
-$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
+$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cputag))
 $tag = @([string]::Format('TAG={0}', $UBUNTU_VERSION))
 $cpu_arg = @([string]::Format('CPU={0}', $cpu))
 $image = @([string]::Format('IMAGE={0}', $IMAGE_REPO))

@@ -13,6 +13,7 @@ ARG TZDATA=Europe/Berlin
 # ARM use arm64 to get the Powershell installation files
 ARG CPU=x64
 ARG TAG=${TAG}
+ARG UBUNTU_CODENAME=noble
 
 # Timezone
 ARG TZDATA=Europe/Berlin
@@ -26,6 +27,11 @@ ARG MSGRAPH_VERSION=1.9.0
 ARG MSGRAPH_PACKAGE=msgraph-cli-linux-${CPU}-${MSGRAPH_VERSION}.tar.gz
 ARG MSGRAPH_PACKAGE_URL=https://github.com/microsoftgraph/msgraph-cli/releases/download/v${MSGRAPH_VERSION}/${MSGRAPH_PACKAGE}
 RUN echo ${MSGRAPH_PACKAGE_URL}
+
+# ARG BICEB_VERSION=0.34.44
+# ARG BICEP_PACKAGE_URL=https://github.com/Azure/bicep/releases/download/v${BICEB_VERSION}/bicep-linux-${CPU}
+ARG BICEP_PACKAGE_URL=https://github.com/Azure/bicep/releases/latest/download/bicep-linux-${CPU}
+RUN echo ${BICEP_PACKAGE_URL}
 
 # Set environment variables
 ENV LC_ALL="en_US.UTF-8" \
@@ -47,40 +53,43 @@ COPY .bash_aliases /root/.bash_aliases
 RUN apt-get update -y \
     && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
-       python3 \
-       python3-distutils \
-       gcc \
-       openssh-client \
-       python3-dev \
-       less \
-       locales \
+       apt-transport-https ca-certificates curl gnupg lsb-release \
        curl \
        jq \
        wget \
-       ca-certificates \
-       libcap2-bin \
-       gnome-keyring \
-       libsecret-1-0 \
+       locales \
+       # Need for bicep
+       libicu74 \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG}  >>/etc/default/locale \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
     && locale-gen ${LANG} && update-locale \
-    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \    
-    && chmod 755 /root/scripts/install.sh \
-    && /root/scripts/install.sh
-
-# MS Graph CLI not supported on x64 Linux   
-# Install msgraph-cli only for x64
-RUN if [ "$CPU" = "x64" ]; then \
-    wget -O /tmp/msgraph.tar.gz ${MSGRAPH_PACKAGE_URL} >>dev/null \
+    # MS Graph CLI not supported on x64 Linux    
+    # Install msgraph-cli only for x64
+    && if [ "$CPU" = "x64" ]; then \
+    apt-get install -y gnome-keyring libsecret-1-0 \
+    && wget -O /tmp/msgraph.tar.gz ${MSGRAPH_PACKAGE_URL} >>dev/null \
     && tar -zxf /tmp/msgraph.tar.gz -C /opt/microsoft/msgraph \
     && ln -s /opt/microsoft/msgraph/mgc /usr/local/bin/mgc \
     && rm -f /tmp/msgraph.tar.gz; \
-    fi
-# Install Terraform
-RUN wget -O - https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+    fi \
+    && wget -O /tmp/bicep ${BICEP_PACKAGE_URL} \
+    # Mark it as executable
+    && chmod +x /tmp/bicep \
+    # Add bicep to your PATH (requires admin)
+    && mv /tmp/bicep /usr/local/bin/bicep \
+    # Install Terraform
+    && wget -O - https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
     && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com ${UBUNTU_CODENAME} main" | tee /etc/apt/sources.list.d/hashicorp.list \
     && apt update -y \
-    && apt install terraform -y
+    && apt install terraform -y \
+    && apt-get clean -y \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /var/cache/apt/archives/*.deb
+    
+RUN chmod 755 /root/scripts/install.sh \
+    && /root/scripts/install.sh
 
 # Clean Up
 RUN rm -f /root/scripts/install.sh
