@@ -12,6 +12,7 @@ ARG TZDATA=Europe/Berlin
 # ARM use arm64 to get the Powershell installation files
 ARG CPU=x64
 ARG TAG=${TAG}
+ARG UBUNTU_CODENAME=noble
 
 # Parameters POWERSHELL
 # Download: https://github.com/PowerShell/PowerShell/releases/download/v7.2.6/powershell-7.2.6-linux-arm64.tar.gz
@@ -55,61 +56,69 @@ RUN apt-get update -y \
     && apt-get upgrade -y \
     && apt-get install -y wget \
     && apt-get install --no-install-recommends -y \
-    less \
+    wget apt-transport-https software-properties-common \
     locales \
-    ca-certificates \
-    gss-ntlmssp \
-    openssh-client \
     jq \
-    mono-devel \
-    gnupg \
+    adduser \
+    # dotnet-sdk-8.0 \
     && echo ${LC_ALL} >>/etc/default/locale \
     && echo ${LANG} $ >>/etc/default/locale \
-    && locale-gen $LANG && update-locale
-
-# Install PowerShell from Microsoft APT Repo
-RUN wget -O /tmp/powershell.tar.gz ${PS_PACKAGE_URL} >>/dev/null \
+    && locale-gen $LANG && update-locale \
+    # Install PowerShell from Microsoft APT Repo
+    && wget -O /tmp/powershell.tar.gz ${PS_PACKAGE_URL} >>/dev/null \
     && tar -zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7  \
     && chmod +x /opt/microsoft/powershell/7/pwsh \
     && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh \
     # remove powershell package 
-    && rm -f /tmp/powershell.tar.gz
-
-# Intialize powershell module cache and disable telemetry
-# Install PowerShell module Az and Microsoft Graph
-RUN export POWERSHELL_TELEMETRY_OPTOUT=1 \
-    && pwsh \
-    -NoLogo \
-    -NoProfile \
-    -Command " \
-    \$ErrorActionPreference = 'Stop' ; \
-    \$ProgressPreference = 'SilentlyContinue' ; \
-    while(!(Test-Path -Path \$env:PSModuleAnalysisCachePath)) {  \
-        Write-Host "'Waiting for $env:PSModuleAnalysisCachePath'" ; \
-        Start-Sleep -Seconds 6 ; \
-    }" \
-    && pwsh \
-    -NoLogo \
-    -NoProfile \
-    -Command " \
-    \$ErrorActionPreference = 'Stop' ; \
-    \$ProgressPreference = 'SilentlyContinue' ; \
-    Write-Host "'Install-Module -Name AZ **** Takes a long time ****'" ; \
-    Install-Module -Name Az -AllowClobber -Scope AllUsers -Force ;" \
-    && pwsh \
-    -NoLogo \
-    -NoProfile \
-    -Command " \
-    \$ErrorActionPreference = 'Stop' ; \
-    \$ProgressPreference = 'SilentlyContinue' ; \
-    Write-Host "'Install-Module -Name Microsoft Graph **** Takes a long time ****'" ; \
-    Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force ;"
-
-# Install Terraform
-RUN wget -O - https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
-    && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com ${UBUNTU_CODENAME} main" | tee /etc/apt/sources.list.d/hashicorp.list \
-    && apt update -y \
-    && apt install terraform -y
+    && rm -f /tmp/powershell.tar.gz \
+    # Intialize powershell module cache and disable telemetry
+    # Install PowerShell module Az and Microsoft Graph
+    && export POWERSHELL_TELEMETRY_OPTOUT=1 \
+        && pwsh \
+        -NoLogo \
+        -NoProfile \
+        -Command " \
+        \$ErrorActionPreference = 'Stop' ; \
+        \$ProgressPreference = 'SilentlyContinue' ; \
+        while(!(Test-Path -Path \$env:PSModuleAnalysisCachePath)) {  \
+            Write-Host "'Waiting for $env:PSModuleAnalysisCachePath'" ; \
+            Start-Sleep -Seconds 6 ; \
+        }" \
+        && pwsh \
+            -NoLogo \
+            -NoProfile \
+            -Command " \
+            \$ErrorActionPreference = 'Stop' ; \
+            \$ProgressPreference = 'SilentlyContinue' ; \
+            Write-Host "'Install-Module -Name AZ **** Takes a long time ****'" ; \
+            Install-Module -Name Az -AllowClobber -Scope AllUsers -Force ;" \
+        && pwsh \
+            -NoLogo \
+            -NoProfile \
+            -Command " \
+            \$ErrorActionPreference = 'Stop' ; \
+            \$ProgressPreference = 'SilentlyContinue' ; \
+            Write-Host "'Install-Module -Name Microsoft Graph **** Takes a long time ****'" ; \
+            Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force ;" \
+        # https://www.powershellgallery.com/packages/Bicep/2.8.0
+        && pwsh \
+            -NoLogo \
+            -NoProfile \
+            -Command " \
+            \$ErrorActionPreference = 'Stop' ; \
+            \$ProgressPreference = 'SilentlyContinue' ; \
+            Write-Host "'Install-Module -Name Bicep **** Takes a long time ****'" ; \
+            Install-Module Bicep -Scope AllUsers -Repository PSGallery -Force ;" \
+    # Install Terraform
+    && wget -O - https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+        && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com ${UBUNTU_CODENAME} main" | tee /etc/apt/sources.list.d/hashicorp.list \
+        && apt update -y \
+        && apt install terraform -y \
+    # Clean up
+    && apt-get clean -y \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /var/cache/apt/archives/*.deb  
 
 # Set working directory
 WORKDIR /root

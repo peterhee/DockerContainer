@@ -1,11 +1,14 @@
 # Command Line Arguments
 $user = "pheese"
-$name = "azure-pwsh"
+$name = "azure-cli"
 $cpu = "arm64"
 $USER_ID = "1000"
 $GROUP_ID = "1000"
+$USER_NAME = "user"
 $PS_VERSION="7.4.3"
-$UBUNTU_VERSION = "22.04"
+$UBUNTU_VERSION = "24.04"
+$MSGRAPH_VERSION = "1.9.0"
+
 
 $osarchitecture = $(Get-ComputerInfo).OsArchitecture
 write-host $osarchitecture
@@ -43,46 +46,51 @@ for ($i = 0; $i -le $Args.count; $i++ ) {
 				{
 					$USER_NAME = $Args[$i].Split("=")[1]
 				}
+			{@("-m", "--msgraph" -contains $_.Split("=")[0])}
+				{
+					$MSGRAPH_VERSION = $Args[$i].Split("=")[1]
+				}				
 			default {
 				write-host $_
 				write-host "*** Command line help ***"
 				write-host '	-e or --enable "To run a Docker container as a non-root user"'
 				write-host '	-u="{USER_ID}" or --uid="{USER_ID}"'
 				write-host '	-g="{GROUP_ID}" or --gid="{GROUP_ID}"'
-				write-host '	-p="{PS_VERSION}" or --pwsh={PS_VERSION}'
-				write-host 'Default: root user PS_VERSION="7.4.3"'
-				write-host '	'$($MyInvocation.MyCommand.Name) '-p="7.4.4"'
-				write-host 'Default: non-root user USER_ID="1000" GROUP_ID="1000" PS_VERSION="7.4.3"'
-				write-host '	'$($MyInvocation.MyCommand.Name) '-p="7.4.4" -u="1001" -g="1001" -e'
+				write-host '	-m="{MG_VERSION}" or --msgraph="{MG_VERSION}"'
+				write-host 'Defaults: MG_VERSION="1.9.0"'
+				write-host '	'$($MyInvocation.MyCommand.Name) '-m="1.9.0"'
+				write-host 'Defaults: non-root user USER_ID="1000" GROUP_ID="1000" MG_VERSION="1.9.0"'
+				write-host '	'$($MyInvocation.MyCommand.Name) '-m="1.9.0" -u="1001" -g="1001" -e'
 				exit 1
                 } 
 			}
 		}
 	}
 
+$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
+$tag = @([string]::Format('TAG={0}', $UBUNTU_VERSION))
+$cpu_arg = @([string]::Format('CPU={0}', $cpu))
+$image = @([string]::Format('IMAGE={0}', $IMAGE_REPO))
+$msgraphversion = @([string]::Format('MSGRAPH_VERSION={0}', $MSGRAPH_VERSION))
+
 if ($userenabled) {
-	$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
-	$tag = @([string]::Format('TAG={0}', $UBUNTU_VERSION))
-	$cpu_arg = @([string]::Format('CPU={0}', $cpu))
-	$image = @([string]::Format('IMAGE={0}', $IMAGE_REPO))
 	$grpid = @([string]::Format('GROUP_ID={0}', $GROUP_ID))
 	$userid = @([string]::Format('USER_ID={0}', $USER_ID))
 	$username = @([string]::Format('USER_NAME={0}', $USER_NAME)) 
-	$psversion =  @([string]::Format('PS_VERSION={0}', $PS_VERSION))
-	$dockerfile = "dockerfile.user"
-} else {
-	$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
 	$dockerfile = "dockerfile"
+} 
+else {
+	$dockerfile = "dockerfile.root"
 }
 
 if (Test-Path $dockerfile) {
 
 	if ($userenabled) {
-		write-host "docker build -t $container --build-arg $cpu_arg --build-arg $image --build-arg $tag --build-arg $psversion --build-arg $userid --build-arg $username --build-arg $grpid -f $dockerfile ."
-		docker build -t $container --build-arg $psversion --build-arg $userid --build-arg $grpid -f $dockerfile .
+	    write-host "docker build -t $container --build-arg $tag --build-arg $image --build-arg $grpid --build-arg $userid --build-arg $username --build-arg $msgraphversion --no-cache -f $dockerfile ."
+	    docker build -t $container --build-arg $tag --build-arg $image --build-arg $grpid --build-arg $userid --build-arg $username --build-arg $msgraphversion --no-cache -f $dockerfile .
 	}
 	else {
-		write-host "docker build -t $container --build-arg $psversion -f $dockerfile ."
-		docker build -t $container --build-arg $psversion -f $dockerfile .
+	    write-host "docker build -t $container --build-arg $tag --build-arg $image --build-arg $msgraphversion --no-cache -f $dockerfile ."
+	    docker build -t $container --build-arg $tag --build-arg $image --build-arg $msgraphversion --no-cache -f $dockerfile .
 	}
 }

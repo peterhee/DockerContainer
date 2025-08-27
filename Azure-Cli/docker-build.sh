@@ -95,10 +95,10 @@ if [ $userenabled = 1 ]; then
             --no-cache -f dockerfile .
     fi
 else
-    if [ -f dockerfile ]; then
+    if [ -f dockerfile.root ]; then
         docker build -t docker.io/$user/$name:$tag --build-arg CPU=$cpu \
             --build-arg IMAGE=$IMAGE_REPO --build-arg TAG=$UBUNTU_VERSION \
             --build-arg MSGRAPH_VERSION=$MSGRAPH_VERSION \
-            -f dockerfile .
+            -f dockerfile.root .
     fi
 fi

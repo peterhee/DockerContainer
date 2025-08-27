@@ -4,8 +4,9 @@ $name = "azure-pwsh"
 $cpu = "arm64"
 $USER_ID = "1000"
 $GROUP_ID = "1000"
+$USER_NAME = "user"
 $PS_VERSION="7.4.3"
-$UBUNTU_VERSION = "22.04"
+$UBUNTU_VERSION = "24.04"
 
 $osarchitecture = $(Get-ComputerInfo).OsArchitecture
 write-host $osarchitecture
@@ -64,29 +65,29 @@ for ($i = 0; $i -le $Args.count; $i++ ) {
 		}
 	}
 
+$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
+$tag = @([string]::Format('TAG={0}', $UBUNTU_VERSION))
+$cpu_arg = @([string]::Format('CPU={0}', $cpu))
+$image = @([string]::Format('IMAGE={0}', $IMAGE_REPO))
+$psversion =  @([string]::Format('PS_VERSION={0}', $PS_VERSION))
+
 if ($userenabled) {
-	$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
-	$tag = @([string]::Format('TAG={0}', $UBUNTU_VERSION))
-	$cpu_arg = @([string]::Format('CPU={0}', $cpu))
-	$image = @([string]::Format('IMAGE={0}', $IMAGE_REPO))
 	$grpid = @([string]::Format('GROUP_ID={0}', $GROUP_ID))
 	$userid = @([string]::Format('USER_ID={0}', $USER_ID))
 	$username = @([string]::Format('USER_NAME={0}', $USER_NAME)) 
-	$psversion =  @([string]::Format('PS_VERSION={0}', $PS_VERSION))
-	$dockerfile = "dockerfile.user"
-} else {
-	$container = @([string]::Format('docker.io/{0}/{1}:{2}', $user, $name, $cpu))
 	$dockerfile = "dockerfile"
+} else {
+	$dockerfile = "dockerfile.root"
 }
 
 if (Test-Path $dockerfile) {
 
 	if ($userenabled) {
 		write-host "docker build -t $container --build-arg $cpu_arg --build-arg $image --build-arg $tag --build-arg $psversion --build-arg $userid --build-arg $username --build-arg $grpid -f $dockerfile ."
-		docker build -t $container --build-arg $psversion --build-arg $userid --build-arg $grpid -f $dockerfile .
+		docker build -t $container --build-arg $cpu_arg --build-arg $image --build-arg $tag --build-arg $psversion --build-arg $userid --build-arg $username --build-arg $grpid -f $dockerfile .
 	}
 	else {
-		write-host "docker build -t $container --build-arg $psversion -f $dockerfile ."
-		docker build -t $container --build-arg $psversion -f $dockerfile .
+		write-host "docker build -t $container --build-arg $cpu_arg --build-arg $image --build-arg $tag --build-arg $psversion -f $dockerfile ."
+		docker build -t $container --build-arg $cpu_arg --build-arg $image --build-arg $tag --build-arg $psversion -f $dockerfile .
 	}
 }

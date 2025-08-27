@@ -38,7 +38,7 @@ RUN mkdir -p /root/.azure
 RUN mkdir -p /opt/microsoft/msgraph
 
 # Copy files
-COPY install.py /root/scripts/install.py
+# COPY install.py /root/scripts/install.py
 COPY install.sh /root/scripts/install.sh
 COPY .bashrc /root/.bashrc
 COPY .bash_aliases /root/.bash_aliases
@@ -84,7 +84,7 @@ RUN wget -O - https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/sha
 
 # Clean Up
 RUN rm -f /root/scripts/install.sh
-RUN rm -f /root/scripts/install.py
+# RUN rm -f /root/scripts/install.py
 
 # Set working directory
 WORKDIR /root
